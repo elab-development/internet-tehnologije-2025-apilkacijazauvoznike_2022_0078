@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: iteh_uvoznici_db
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: iteh_uvoznici
+    ports:
+      - "5432:5432"
+    volumes:
+      - iteh_pg_data:/var/lib/postgresql/data
+
+volumes:
+  iteh_pg_data:
