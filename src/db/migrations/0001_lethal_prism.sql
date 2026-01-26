@@ -1,0 +1,1 @@
+ALTER TABLE "korisnik" ADD COLUMN "telefon" varchar(20);

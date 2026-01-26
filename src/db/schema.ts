@@ -9,6 +9,7 @@ export const korisnik = pgTable("korisnik", {
   sifra: varchar("sifra", { length: 255 }).notNull(),
   uloga: ulogaEnum("uloga").notNull(), 
   status: boolean("status").default(true).notNull()
+  
 });
 
 export const kategorija = pgTable("kategorija", {

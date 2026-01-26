@@ -8,6 +8,27 @@
       "when": 1769091496287,
       "tag": "0000_heavy_ares",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769441770599,
+      "tag": "0001_lethal_prism",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769441862206,
+      "tag": "0002_young_star_brand",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769442338617,
+      "tag": "0003_daily_sinister_six",
+      "breakpoints": true
     }
   ]
 }

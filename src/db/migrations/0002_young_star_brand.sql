@@ -1,0 +1,1 @@
+ALTER TABLE "korisnik" ADD CONSTRAINT "korisnik_telefon_unique" UNIQUE("telefon");
