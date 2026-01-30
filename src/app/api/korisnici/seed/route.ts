@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 export async function POST() {
   try {
-    // Hash sifre (umesto plain-text)
+    
     const adminHash = await bcrypt.hash("admin123", 10);
     const uvoznikHash = await bcrypt.hash("uvoznik123", 10);
     const dobavljacHash = await bcrypt.hash("dobavljac123", 10);

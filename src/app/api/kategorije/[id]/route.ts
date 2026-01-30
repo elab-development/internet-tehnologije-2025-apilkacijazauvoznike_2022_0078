@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { deleteCategoryById, updateCategory } from "@/src/controllers/kategorije_controller";
+import { requireRole, requireUser } from "@/src/lib/auth_guard";
 
 
 export async function DELETE(req: Request, context: any) {
   try {
+    const user = await requireUser();
+    requireRole(user, ["ADMIN"]);
 
     const params = await context.params;
     const id = Number(params.id);
@@ -19,7 +22,9 @@ export async function DELETE(req: Request, context: any) {
     }
 
     return NextResponse.json({ ok: true, data: result.data });
-  } catch (e) {
+  } catch (e:any) {
+    if(e instanceof Response) return e;
+    
     return NextResponse.json(
       { ok: false, error: "INTERNAL_ERROR", message: "Greska pri brisanju kategorije!" },
       { status: 500 }
@@ -30,6 +35,8 @@ export async function DELETE(req: Request, context: any) {
 
 export async function PATCH(req: Request, context: any) {
   try {
+    const user = await requireUser();
+    requireRole(user, ["ADMIN"]);
 
     const params = await context.params;
     const id = Number(params.id);
@@ -50,6 +57,8 @@ export async function PATCH(req: Request, context: any) {
 
     return NextResponse.json({ ok: true, data: result.data });
   } catch (e: any) {
+    if(e instanceof Response) return e;
+
     return NextResponse.json(
       { ok: false, error: "INTERNAL_ERROR", message: "Greska pri izmeni podataka!" },
       { status: 500 }
