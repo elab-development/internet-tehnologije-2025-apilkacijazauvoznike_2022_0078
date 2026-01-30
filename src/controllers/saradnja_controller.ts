@@ -91,3 +91,52 @@ export async function deleteSaradnja(idParam: string) {
     };
   }
 }
+
+export async function getAllSaradnje(filter?: { idUvoznik?: number; idDobavljac?: number }) {
+  try {
+    // uvoznik
+    if (filter?.idUvoznik) {
+      const rows = await db
+        .select()
+        .from(saradnja)
+        .where(eq(saradnja.idUvoznik, filter.idUvoznik));
+      return { status: 200, json: { ok: true, saradnje: rows } };
+    }
+
+    // dobavljac
+    if (filter?.idDobavljac) {
+      const rows = await db
+        .select()
+        .from(saradnja)
+        .where(eq(saradnja.idDobavljac, filter.idDobavljac));
+      return { status: 200, json: { ok: true, saradnje: rows } };
+    }
+
+    //admin 
+    const rows = await db.select().from(saradnja);
+    return { status: 200, json: { ok: true, saradnje: rows } };
+  } catch (err: any) {
+    return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
+  }
+}
+
+export async function getSaradnjaById(idParam: string) {
+  const id = parseId(idParam);
+  if (!id) return { status: 400, json: { ok: false, error: "Neispravan ID saradnje" } };
+
+  try {
+    const rows = await db
+      .select()
+      .from(saradnja)
+      .where(eq(saradnja.idSaradnja, id))
+      .limit(1);
+
+    const s = rows[0];
+    if (!s) return { status: 404, json: { ok: false, error: "Saradnja nije pronađena" } };
+
+    return { status: 200, json: { ok: true, saradnja: s } };
+  } catch (err: any) {
+    return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
+  }
+}
+

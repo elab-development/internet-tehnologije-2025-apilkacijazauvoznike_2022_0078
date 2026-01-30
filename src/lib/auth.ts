@@ -7,7 +7,7 @@ if (!JWT_SECRET) {
   throw new Error("Missing JWT_SECRET in env file");
 }
 
-// Ovo je ono sto stavljamo u token (kao licna karta)
+// ovo je u tokenu
 export type JwtUserClaims = {
   sub: number; 
   uloga: "ADMIN" | "UVOZNIK" | "DOBAVLJAC";

@@ -81,8 +81,29 @@ export async function createProizvod(body: any) {
   }
 }
 
-export async function getAllProizvodi() {
-  try {
+export async function getAllProizvodi(filter?: {idDobavljac?: number}) {
+   try {
+    if (filter?.idDobavljac) {
+      const rows = await db
+        .select({
+          id: proizvod.id,
+          sifra: proizvod.sifra,
+          naziv: proizvod.naziv,
+          cena: proizvod.cena,
+          slika: proizvod.slika,
+          idKategorija: proizvod.idKategorija,
+          kategorijaIme: kategorija.ime,
+          idDobavljac: proizvod.idDobavljac,
+          dobavljacIme: korisnik.imePrezime,
+        })
+        .from(proizvod)
+        .leftJoin(kategorija, eq(proizvod.idKategorija, kategorija.id))
+        .leftJoin(korisnik, eq(proizvod.idDobavljac, korisnik.id))
+        .where(eq(proizvod.idDobavljac, filter.idDobavljac));
+
+      return { status: 200, json: { ok: true, proizvodi: rows } };
+    }
+
     const rows = await db
       .select({
         id: proizvod.id,
@@ -111,9 +132,138 @@ function parseId(id: string) {
   return n;
 }
 
-export async function updateProizvod(idParam: string, body: any) {
-  const id = parseId(idParam);
+// export async function updateProizvod(idParam: string, body: any) {
+//   const id = parseId(idParam);
+//   if (!id) return { status: 400, json: { ok: false, error: "Neispravan id" } };
+
+//   const zaIzmenu: any = {};
+
+//   if (body?.sifra !== undefined) {
+//     if (typeof body.sifra !== "string" || body.sifra.trim() === "") {
+//       return { status: 400, json: { ok: false, error: "sifra mora biti string" } };
+//     }
+//     zaIzmenu.sifra = body.sifra.trim();
+//   }
+
+//   if (body?.naziv !== undefined) {
+//     if (typeof body.naziv !== "string" || body.naziv.trim() === "") {
+//       return { status: 400, json: { ok: false, error: "naziv mora biti string" } };
+//     }
+//     zaIzmenu.naziv = body.naziv.trim();
+//   }
+
+//   if (body?.slika !== undefined) {
+//     if (typeof body.slika !== "string" || body.slika.trim() === "") {
+//       return { status: 400, json: { ok: false, error: "slika mora biti string" } };
+//     }
+//     zaIzmenu.slika = body.slika.trim();
+//   }
+
+//   for (const key of ["sirina", "visina", "duzina", "cena"] as const) {
+//     if (body?.[key] !== undefined) {
+//       const num = Number(body[key]);
+//       if (!Number.isFinite(num)) {
+//         return { status: 400, json: { ok: false, error: `${key} mora biti broj` } };
+//       }
+//       zaIzmenu[key] = num;
+//     }
+//   }
+
+//   if (body?.idKategorija !== undefined) {
+//     const n = Number(body.idKategorija);
+//     if (!Number.isInteger(n) || n <= 0) {
+//       return { status: 400, json: { ok: false, error: "idKategorija mora biti pozitivan ceo broj" } };
+//     }
+//     zaIzmenu.idKategorija = n;
+//   }
+
+//   // if (body?.idDobavljac !== undefined) {
+//   //   const n = Number(body.idDobavljac);
+//   //   if (!Number.isInteger(n) || n <= 0) {
+//   //     return { status: 400, json: { ok: false, error: "idDobavljac mora biti pozitivan ceo broj" } };
+//   //   }
+//   //   zaIzmenu.idDobavljac = n;
+//   // }
+
+//   if (Object.keys(zaIzmenu).length === 0) {
+//     return { status: 400, json: { ok: false, error: "Nema polja za izmenu" } };
+//   }
+
+//   try {
+//     const updated = await db
+//       .update(proizvod)
+//       .set(zaIzmenu)
+//       .where(eq(proizvod.id, id))
+//       .returning();
+
+//     if (updated.length === 0) {
+//       return { status: 404, json: { ok: false, error: "Proizvod nije pronađen" } };
+//     }
+
+//     return { status: 200, json: { ok: true, proizvod: updated[0] } };
+//   } catch (err: any) {
+//     return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
+//   }
+// }
+
+// export async function deleteProizvod(idParam: string) {
+//   const id = parseId(idParam);
+//   if (!id) return { status: 400, json: { ok: false, error: "Neispravan id" } };
+
+//   try {
+//     const deleted = await db
+//       .delete(proizvod)
+//       .where(eq(proizvod.id, id))
+//       .returning();
+
+//     if (deleted.length === 0) {
+//       return { status: 404, json: { ok: false, error: "Proizvod nije pronađen" } };
+//     }
+
+//     return { status: 200, json: { ok: true, deleted: deleted[0] } };
+//   } catch (err: any) {
+//     return {
+//       status: 409,
+//       json: {
+//         ok: false,
+//         error:
+//           "Ne može se obrisati proizvod, jer je trenutno u nekoj stavci. Prvo obrišite zavisne stavke.",
+//       },
+//     };
+//   }
+// }
+
+async function assertOwnership(userId: number, productId: number) {
+  
+  const rows = await db
+    .select({ id: proizvod.id, idDobavljac: proizvod.idDobavljac })
+    .from(proizvod)
+    .where(eq(proizvod.id, productId))
+    .limit(1);
+
+  const p = rows[0];
+  if (!p) {
+    return { status: 404, json: { ok: false, error: "Proizvod nije pronađen" } };
+  }
+  if (p.idDobavljac !== userId) {
+    return { status: 403, json: { ok: false, error: "Ne možete menjati/brisati tuđi proizvod" } };
+  }
+  return {status:200,json:{ok:true}}; 
+}
+
+export async function updateProizvod(userId: number, productId: string, body: any) {
+  const id = parseId(productId);
   if (!id) return { status: 400, json: { ok: false, error: "Neispravan id" } };
+
+  const ownershipErr = await assertOwnership(userId, id);
+  if (!ownershipErr.json.ok) {
+    return ownershipErr;
+    }
+
+  // zabranjujemo promenu iddobavljac
+  if (body?.idDobavljac !== undefined) {
+    return { status: 400, json: { ok: false, error: "Nije dozvoljeno menjati idDobavljac" } };
+  }
 
   const zaIzmenu: any = {};
 
@@ -156,13 +306,13 @@ export async function updateProizvod(idParam: string, body: any) {
     zaIzmenu.idKategorija = n;
   }
 
-  if (body?.idDobavljac !== undefined) {
-    const n = Number(body.idDobavljac);
-    if (!Number.isInteger(n) || n <= 0) {
-      return { status: 400, json: { ok: false, error: "idDobavljac mora biti pozitivan ceo broj" } };
-    }
-    zaIzmenu.idDobavljac = n;
-  }
+  // if (body?.idDobavljac !== undefined) {
+  //   const n = Number(body.idDobavljac);
+  //   if (!Number.isInteger(n) || n <= 0) {
+  //     return { status: 400, json: { ok: false, error: "idDobavljac mora biti pozitivan ceo broj" } };
+  //   }
+  //   zaIzmenu.idDobavljac = n;
+  // }
 
   if (Object.keys(zaIzmenu).length === 0) {
     return { status: 400, json: { ok: false, error: "Nema polja za izmenu" } };
@@ -185,9 +335,14 @@ export async function updateProizvod(idParam: string, body: any) {
   }
 }
 
-export async function deleteProizvod(idParam: string) {
-  const id = parseId(idParam);
+export async function deleteProizvod(userId: number, productId: string) {
+  const id = parseId(productId);
   if (!id) return { status: 400, json: { ok: false, error: "Neispravan id" } };
+
+  const ownershipErr = await assertOwnership(userId,id);
+  if (!ownershipErr.json.ok) {
+   return ownershipErr;
+    }
 
   try {
     const deleted = await db
@@ -211,3 +366,4 @@ export async function deleteProizvod(idParam: string) {
     };
   }
 }
+
