@@ -8,8 +8,10 @@ export async function PATCH(req: Request, context:any) {
     requireRole(user, ["DOBAVLJAC"]);
 
     const body = await req.json();
-    const id = context.params.id; //await
 
+    const params = await context.params;
+    const id = params.id; 
+    
     const result = await updateProizvod(user.id, id, body);
     return NextResponse.json(result.json, { status: result.status });
   } catch (err) {
@@ -22,7 +24,8 @@ export async function DELETE(_:Request,  context:any) {
     const user = await requireUser();
     requireRole(user, ["DOBAVLJAC"]);
 
-    const id = context.params.id; //await
+    const params = await context.params;
+    const id = params.id; 
 
     const result = await deleteProizvod(user.id, id);
     return NextResponse.json(result.json, { status: result.status });
