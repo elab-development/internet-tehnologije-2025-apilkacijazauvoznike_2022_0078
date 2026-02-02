@@ -17,9 +17,11 @@ export type Product = {
 export default function ProductCard({
   p,
   onDelete,
+  onEdit,
 }: {
   p: Product;
   onDelete?: (id: number) => void;
+  onEdit?: (id: number) => void;
 }) {
   
   return (
@@ -33,11 +35,25 @@ export default function ProductCard({
         </div>
         <div className="text-sm font-medium">Cena: {p.cena}</div>
       </div>
+      {(onEdit || onDelete) && (
+        <div className="flex flex-col gap-2">
+          {onEdit && (
+            <Button variant="secondary" onClick={() => onEdit(p.id)}>
+              Izmeni
+            </Button>
+          )}
+
+
+
       {onDelete && (
         <Button variant="danger" onClick={() => onDelete(p.id)}>
           Obriši
         </Button>
+
       )}
     </div>
+      )}
+      </div>
   );
+
 }

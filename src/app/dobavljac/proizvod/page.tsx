@@ -17,12 +17,17 @@ export default function SupplierProductsPage() {
   async function handleDelete(id: number) {
     console.log("DELETE click id =", id);
 
+
     const res = await fetch(`/api/proizvodi/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
 
-    const text = await res.text(); 
+
+
+
+
+    const text = await res.text();
     console.log("DELETE status =", res.status, "body =", text);
 
     if (!res.ok) {
@@ -33,12 +38,18 @@ export default function SupplierProductsPage() {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   }
 
+
+
+  function handleEdit(id: number) {
+    router.push(`/dobavljac/proizvod/${id}/izmena`);
+  }
+
   // kad se stranica ucita
   useEffect(() => {
     async function init() {
 
       try {
-        const meRes = await fetch("/api/auth/me");
+        const meRes = await fetch("/api/auth/me", {credentials:"include"});
 
         if (!meRes.ok) {
           setLoading(false);
@@ -56,7 +67,7 @@ export default function SupplierProductsPage() {
           return;
         }
 
-        const pRes = await fetch("/api/proizvodi");
+        const pRes = await fetch("/api/proizvodi", {credentials:"include"});
 
 
         if (!pRes.ok) {
@@ -73,7 +84,7 @@ export default function SupplierProductsPage() {
           return;
         }
 
-        const list = pJson.proizvodi; 
+        const list = pJson.proizvodi;
 
         setProducts(Array.isArray(list) ? list : []);
         setLoading(false);
@@ -104,7 +115,12 @@ export default function SupplierProductsPage() {
           <div>Nema proizvoda.</div>
         ) : (
           products.map((p) => (
-            <ProductCard key={p.id} p={p} onDelete={handleDelete} />
+            <ProductCard
+              key={p.id}
+              p={p}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
           ))
         )}
       </div>

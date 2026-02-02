@@ -1,6 +1,6 @@
 import { db } from "@/src/db";
 import { proizvod, kategorija, korisnik } from "@/src/db/schema";
-import { eq } from "drizzle-orm";
+import { and,eq } from "drizzle-orm";
 
 export type CreateProizvodInput = {
   sifra: string;
@@ -369,4 +369,19 @@ export async function deleteProizvod(userId: number, productId: string) {
     };
   }
 }
+export async function getProizvodById(userId: number, id: number) {
+  // ownership check: proizvod mora da pripada ulogovanom dobavljaču
+  const rows = await db
+    .select()
+    .from(proizvod)
+    .where(and(eq(proizvod.id, id), eq(proizvod.idDobavljac, userId)));
 
+  const p = rows[0];
+
+  if (!p) {
+    // namerno 404 da ne otkriva da li postoji tuđi proizvod
+    return { status: 404, json: { ok: false, error: "NOT_FOUND" } };
+  }
+
+  return { status: 200, json: { ok: true, proizvod: p } };
+}
