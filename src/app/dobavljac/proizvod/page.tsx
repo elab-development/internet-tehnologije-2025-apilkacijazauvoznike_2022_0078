@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/src/components/Button";
 import ProductCard, { Product } from "@/src/components/ProductCard";
+import { homeByRole } from "@/src/lib/role_routes";
+import LogoutButton from "@/src/components/LogoutButton";
 
 type Me = { id: number; uloga: "ADMIN" | "UVOZNIK" | "DOBAVLJAC" };
 
@@ -15,20 +17,12 @@ export default function SupplierProductsPage() {
   const [error, setError] = useState("");
 
   async function handleDelete(id: number) {
-    console.log("DELETE click id =", id);
-
-
     const res = await fetch(`/api/proizvodi/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
 
-
-
-
-
     const text = await res.text();
-    console.log("DELETE status =", res.status, "body =", text);
 
     if (!res.ok) {
       alert(`Brisanje nije uspelo. Status=${res.status}\nOdgovor: ${text || "(prazno)"}`);
@@ -44,12 +38,11 @@ export default function SupplierProductsPage() {
     router.push(`/dobavljac/proizvod/${id}/izmena`);
   }
 
-  // kad se stranica ucita
   useEffect(() => {
     async function init() {
 
       try {
-        const meRes = await fetch("/api/auth/me", {credentials:"include"});
+        const meRes = await fetch("/api/auth/me", { credentials: "include" });
 
         if (!meRes.ok) {
           setLoading(false);
@@ -63,11 +56,11 @@ export default function SupplierProductsPage() {
 
         if (me.uloga !== "DOBAVLJAC") {
           setLoading(false);
-          router.push("/");
+          router.replace(homeByRole(me.uloga));
           return;
         }
 
-        const pRes = await fetch("/api/proizvodi", {credentials:"include"});
+        const pRes = await fetch("/api/proizvodi", { credentials: "include" });
 
 
         if (!pRes.ok) {
@@ -105,9 +98,12 @@ export default function SupplierProductsPage() {
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Moji proizvodi</h1>
-        <Button onClick={() => router.push("/dobavljac/proizvod/novi")}>
-          + Novi proizvod
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => router.push("/dobavljac/proizvod/novi")}>
+            + Novi proizvod
+          </Button>
+          <LogoutButton />
+        </div>
       </div>
 
       <div className="space-y-3">

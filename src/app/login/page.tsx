@@ -42,6 +42,7 @@ export default function LoginPage() {
     const uloga = meJson?.data?.uloga;
 
     if (uloga === "DOBAVLJAC") router.push("/dobavljac/proizvod");
+    else if(uloga === "UVOZNIK") router.push("/uvoznik/dobavljaci");
     else router.push("/");
   } catch (e) {
     setError("Greška pri loginu (fetch/network).");

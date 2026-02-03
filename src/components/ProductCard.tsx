@@ -23,7 +23,7 @@ export default function ProductCard({
   onDelete?: (id: number) => void;
   onEdit?: (id: number) => void;
 }) {
-  
+
   return (
     <div className="border rounded p-4 flex gap-4">
       <img src={p.slika} alt={p.naziv} className="w-24 h-24 object-cover rounded border" />
@@ -43,17 +43,15 @@ export default function ProductCard({
             </Button>
           )}
 
+          {onDelete && (
+            <Button variant="danger" onClick={() => onDelete(p.id)}>
+              Obriši
+            </Button>
 
-
-      {onDelete && (
-        <Button variant="danger" onClick={() => onDelete(p.id)}>
-          Obriši
-        </Button>
-
+          )}
+        </div>
       )}
     </div>
-      )}
-      </div>
   );
 
 }

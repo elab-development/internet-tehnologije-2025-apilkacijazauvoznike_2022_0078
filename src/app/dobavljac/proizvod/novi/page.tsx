@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Input from "@/src/components/Input";
 import Button from "@/src/components/Button";
+import { homeByRole } from "@/src/lib/role_routes";
+import LogoutButton from "@/src/components/LogoutButton";
 
 type Me = { id: number; uloga: "ADMIN" | "UVOZNIK" | "DOBAVLJAC" };
 
@@ -29,7 +31,7 @@ export default function NoviProizvodPage() {
   useEffect(() => {
     async function init() {
       try {
-        
+
         const meRes = await fetch("/api/auth/me", { credentials: "include" });
         if (!meRes.ok) {
           setLoading(false);
@@ -42,7 +44,7 @@ export default function NoviProizvodPage() {
 
         if (me.uloga !== "DOBAVLJAC") {
           setLoading(false);
-          router.push("/");
+          router.replace(homeByRole(me.uloga));
           return;
         }
 
@@ -122,9 +124,17 @@ export default function NoviProizvodPage() {
     <div className="p-6 max-w-xl space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Novi proizvod</h1>
-        <Button type="button" variant="secondary" onClick={() => router.push("/dobavljac/proizvod")}>
-          Nazad
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.push("/dobavljac/proizvod")}
+          >
+            Nazad
+          </Button>
+
+          <LogoutButton />
+        </div>
       </div>
       {error && <div className="text-red-600">{error}</div>}
       <form className="space-y-3" onSubmit={handleSubmit}>

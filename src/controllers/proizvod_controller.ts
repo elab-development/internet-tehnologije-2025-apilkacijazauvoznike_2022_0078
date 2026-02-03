@@ -27,12 +27,10 @@ function validateCreateInput(body: any): { ok: true; data: CreateProizvodInput }
     idDobavljac,
   } = body ?? {};
 
-  // string i nije prazan?
   if (typeof sifra !== "string" || sifra.trim() === "") return { ok: false, error: "Polje 'sifra' je obavezno" };
   if (typeof naziv !== "string" || naziv.trim() === "") return { ok: false, error: "Polje 'naziv' je obavezno" };
   if (typeof slika !== "string" || slika.trim() === "") return { ok: false, error: "Polje 'slika' je obavezno" };
 
-  // provera brojeva
   const nSirina = Number(sirina);
   const nVisina = Number(visina);
   const nDuzina = Number(duzina);
@@ -135,107 +133,6 @@ function parseId(id: string) {
   return n;
 }
 
-// export async function updateProizvod(idParam: string, body: any) {
-//   const id = parseId(idParam);
-//   if (!id) return { status: 400, json: { ok: false, error: "Neispravan id" } };
-
-//   const zaIzmenu: any = {};
-
-//   if (body?.sifra !== undefined) {
-//     if (typeof body.sifra !== "string" || body.sifra.trim() === "") {
-//       return { status: 400, json: { ok: false, error: "sifra mora biti string" } };
-//     }
-//     zaIzmenu.sifra = body.sifra.trim();
-//   }
-
-//   if (body?.naziv !== undefined) {
-//     if (typeof body.naziv !== "string" || body.naziv.trim() === "") {
-//       return { status: 400, json: { ok: false, error: "naziv mora biti string" } };
-//     }
-//     zaIzmenu.naziv = body.naziv.trim();
-//   }
-
-//   if (body?.slika !== undefined) {
-//     if (typeof body.slika !== "string" || body.slika.trim() === "") {
-//       return { status: 400, json: { ok: false, error: "slika mora biti string" } };
-//     }
-//     zaIzmenu.slika = body.slika.trim();
-//   }
-
-//   for (const key of ["sirina", "visina", "duzina", "cena"] as const) {
-//     if (body?.[key] !== undefined) {
-//       const num = Number(body[key]);
-//       if (!Number.isFinite(num)) {
-//         return { status: 400, json: { ok: false, error: `${key} mora biti broj` } };
-//       }
-//       zaIzmenu[key] = num;
-//     }
-//   }
-
-//   if (body?.idKategorija !== undefined) {
-//     const n = Number(body.idKategorija);
-//     if (!Number.isInteger(n) || n <= 0) {
-//       return { status: 400, json: { ok: false, error: "idKategorija mora biti pozitivan ceo broj" } };
-//     }
-//     zaIzmenu.idKategorija = n;
-//   }
-
-//   // if (body?.idDobavljac !== undefined) {
-//   //   const n = Number(body.idDobavljac);
-//   //   if (!Number.isInteger(n) || n <= 0) {
-//   //     return { status: 400, json: { ok: false, error: "idDobavljac mora biti pozitivan ceo broj" } };
-//   //   }
-//   //   zaIzmenu.idDobavljac = n;
-//   // }
-
-//   if (Object.keys(zaIzmenu).length === 0) {
-//     return { status: 400, json: { ok: false, error: "Nema polja za izmenu" } };
-//   }
-
-//   try {
-//     const updated = await db
-//       .update(proizvod)
-//       .set(zaIzmenu)
-//       .where(eq(proizvod.id, id))
-//       .returning();
-
-//     if (updated.length === 0) {
-//       return { status: 404, json: { ok: false, error: "Proizvod nije pronađen" } };
-//     }
-
-//     return { status: 200, json: { ok: true, proizvod: updated[0] } };
-//   } catch (err: any) {
-//     return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
-//   }
-// }
-
-// export async function deleteProizvod(idParam: string) {
-//   const id = parseId(idParam);
-//   if (!id) return { status: 400, json: { ok: false, error: "Neispravan id" } };
-
-//   try {
-//     const deleted = await db
-//       .delete(proizvod)
-//       .where(eq(proizvod.id, id))
-//       .returning();
-
-//     if (deleted.length === 0) {
-//       return { status: 404, json: { ok: false, error: "Proizvod nije pronađen" } };
-//     }
-
-//     return { status: 200, json: { ok: true, deleted: deleted[0] } };
-//   } catch (err: any) {
-//     return {
-//       status: 409,
-//       json: {
-//         ok: false,
-//         error:
-//           "Ne može se obrisati proizvod, jer je trenutno u nekoj stavci. Prvo obrišite zavisne stavke.",
-//       },
-//     };
-//   }
-// }
-
 async function assertOwnership(userId: number, productId: number) {
   
   const rows = await db
@@ -309,14 +206,6 @@ export async function updateProizvod(userId: number, productId: string, body: an
     zaIzmenu.idKategorija = n;
   }
 
-  // if (body?.idDobavljac !== undefined) {
-  //   const n = Number(body.idDobavljac);
-  //   if (!Number.isInteger(n) || n <= 0) {
-  //     return { status: 400, json: { ok: false, error: "idDobavljac mora biti pozitivan ceo broj" } };
-  //   }
-  //   zaIzmenu.idDobavljac = n;
-  // }
-
   if (Object.keys(zaIzmenu).length === 0) {
     return { status: 400, json: { ok: false, error: "Nema polja za izmenu" } };
   }
@@ -370,7 +259,6 @@ export async function deleteProizvod(userId: number, productId: string) {
   }
 }
 export async function getProizvodById(userId: number, id: number) {
-  // ownership check: proizvod mora da pripada ulogovanom dobavljaču
   const rows = await db
     .select()
     .from(proizvod)
@@ -379,7 +267,6 @@ export async function getProizvodById(userId: number, id: number) {
   const p = rows[0];
 
   if (!p) {
-    // namerno 404 da ne otkriva da li postoji tuđi proizvod
     return { status: 404, json: { ok: false, error: "NOT_FOUND" } };
   }
 

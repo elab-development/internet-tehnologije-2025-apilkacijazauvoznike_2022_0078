@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Input from "@/src/components/Input";
 import Button from "@/src/components/Button";
+import { homeByRole } from "@/src/lib/role_routes";
+import LogoutButton from "@/src/components/LogoutButton";
 
 type Me = { id: number; uloga: "ADMIN" | "UVOZNIK" | "DOBAVLJAC" };
 type Kategorija = { id: number; ime: string };
@@ -22,7 +24,7 @@ type Proizvod = {
 
 export default function IzmenaProizvodaPage() {
   const router = useRouter();
-  const params=useParams<{id:string}>();
+  const params = useParams<{ id: string }>();
   const id = Number(params?.id);
 
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,6 @@ export default function IzmenaProizvodaPage() {
   useEffect(() => {
     async function init() {
       try {
-        // 1) auth + role
         const meRes = await fetch("/api/auth/me", { credentials: "include" });
         if (!meRes.ok) {
           setLoading(false);
@@ -55,11 +56,10 @@ export default function IzmenaProizvodaPage() {
 
         if (me.uloga !== "DOBAVLJAC") {
           setLoading(false);
-          router.push("/");
+          router.replace(homeByRole(me.uloga));
           return;
         }
 
-        // 2) kategorije (isto kao u create)
         const kRes = await fetch("/api/kategorije", { credentials: "include" });
         if (kRes.ok) {
           const kJson = await kRes.json();
@@ -67,7 +67,6 @@ export default function IzmenaProizvodaPage() {
           if (Array.isArray(list)) setKategorije(list);
         }
 
-        // 3) povuci proizvod po id
         const pRes = await fetch(`/api/proizvodi/${id}`, { credentials: "include" });
         const pText = await pRes.text();
 
@@ -83,7 +82,6 @@ export default function IzmenaProizvodaPage() {
         const proizvod: Proizvod =
           pJson?.proizvod ?? pJson?.data ?? pJson;
 
-        // 4) popuni formu
         setSifra(proizvod.sifra ?? "");
         setNaziv(proizvod.naziv ?? "");
         setSlika(proizvod.slika ?? "");
@@ -166,9 +164,18 @@ export default function IzmenaProizvodaPage() {
     <div className="p-6 max-w-xl space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Izmena proizvoda</h1>
-        <Button type="button" variant="secondary" onClick={() => router.push("/dobavljac/proizvod")}>
-          Nazad
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.push("/dobavljac/proizvod")}
+          >
+            Nazad
+          </Button>
+
+          <LogoutButton />
+        </div>
+
       </div>
 
       {error && <div className="text-red-600">{error}</div>}
