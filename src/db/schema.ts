@@ -37,6 +37,7 @@ export const saradnja = pgTable("saradnja", {
   idDobavljac: integer("idDobavljac").notNull().references(() => korisnik.id, { onDelete: "cascade" }),
   datumPocetka: timestamp("datumPocetka").defaultNow().notNull(),
   status: boolean("status").default(true).notNull(),
+  pending: boolean("pending").notNull().default(true)
 },
   (t) => ({
     uvoznikDobavljacUnique: uniqueIndex("uq_saradnja_uvoznik_dobavljac").on(

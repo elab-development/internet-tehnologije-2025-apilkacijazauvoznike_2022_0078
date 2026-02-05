@@ -23,7 +23,6 @@ export async function PATCH(req: Request, context: any) {
       );
     }
 
-    //uvoznik i dobavljac samo ako se poklapa user i baza
     const isOwner =
       user.uloga === "ADMIN" ||
       (user.uloga === "UVOZNIK" && s.idUvoznik === user.id) ||
@@ -44,15 +43,49 @@ export async function PATCH(req: Request, context: any) {
   }
 }
 
-export async function DELETE(_: Request, context:any) {
+export async function DELETE(_: Request, context: any) {
   try {
     const user = await requireUser();
-    if (user.uloga !== "ADMIN") {
-      return NextResponse.json({ ok: false, error: "FORBIDDEN", message: "Samo admin može brisati saradnju" }, { status: 403 });
+
+    const params = await context.params;
+    const id = params.id;
+
+    const sDb = await getSaradnjaById(id);
+    if (!sDb.json?.ok) {
+      return NextResponse.json(sDb.json, { status: sDb.status });
     }
 
-    const params=await context.params;
-    const id = params.id;
+    const s = sDb.json.saradnja;
+    if (!s) {
+      return NextResponse.json(
+        { ok: false, error: "NOT_FOUND", message: "Saradnja nije pronađena" },
+        { status: 404 }
+      );
+    }
+
+    const isOwner =
+      user.uloga === "ADMIN" ||
+      (user.uloga === "UVOZNIK" && s.idUvoznik === user.id) ||
+      (user.uloga === "DOBAVLJAC" && s.idDobavljac === user.id);
+
+    if (!isOwner) {
+      return NextResponse.json(
+        { ok: false, error: "FORBIDDEN", message: "Nemate pravo da obrišete ovu saradnju" },
+        { status: 403 }
+      );
+    }
+
+    if (s.pending !== true) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "NOT_PENDING",
+          message: "Ne možete brisati aktivnu/prekinutu saradnju. Za prekid koristite PATCH { pending:false, status:false }.",
+        },
+        { status: 409 }
+      );
+    }
+
     const result = await deleteSaradnja(id);
     return NextResponse.json(result.json, { status: result.status });
   } catch (err) {

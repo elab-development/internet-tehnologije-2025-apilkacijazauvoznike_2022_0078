@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Input from "@/src/components/Input";
 import Button from "@/src/components/Button";
 import { homeByRole } from "@/src/lib/role_routes";
@@ -32,6 +32,9 @@ export default function UvoznikDobavljaciPage() {
   const [dobavljaci, setDobavljaci] = useState<DobavljacRow[]>([]);
   const [q, setQ] = useState("");
 
+  let redirected = false;
+
+
   async function init() {
     setLoading(true);
     setErr(null);
@@ -47,8 +50,9 @@ export default function UvoznikDobavljaciPage() {
       const meJson = await meRes.json();
       const uloga = meJson?.data?.uloga;
 
+
       if (uloga !== "UVOZNIK") {
-        setLoading(false);
+        redirected = true;
         router.replace(homeByRole(uloga));
         return;
       }
@@ -65,7 +69,10 @@ export default function UvoznikDobavljaciPage() {
     } catch (e: any) {
       setErr(e?.message ?? "Neočekivana greška");
     } finally {
-      setLoading(false);
+      if (!redirected) {
+        setLoading(false);
+
+      }
     }
   }
 
@@ -95,7 +102,6 @@ export default function UvoznikDobavljaciPage() {
             Vidi proizvode
           </Button>
 
-          <LogoutButton />
         </div>
       </div>
 

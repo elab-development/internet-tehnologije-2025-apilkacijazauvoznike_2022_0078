@@ -42,6 +42,8 @@ export default function UvoznikProizvodiPage() {
     const [proizvodi, setProizvodi] = useState<ProizvodRow[]>([]);
     const [q, setQ] = useState("");
 
+    let redirected = false;
+
     async function load() {
         setLoading(true);
         setErr(null);
@@ -56,7 +58,7 @@ export default function UvoznikProizvodiPage() {
             const uloga = meJson?.data?.uloga;
 
             if (uloga !== "UVOZNIK") {
-                setLoading(false);
+                redirected = true;
                 router.replace(homeByRole(uloga));
                 return;
             }
@@ -73,7 +75,10 @@ export default function UvoznikProizvodiPage() {
         } catch (e: any) {
             setErr(e?.message ?? "Neočekivana greška");
         } finally {
-            setLoading(false);
+            if (!redirected) {
+                setLoading(false);
+
+            }
         }
     }
 
@@ -104,8 +109,7 @@ export default function UvoznikProizvodiPage() {
                     <Button onClick={() => router.push("/uvoznik/dobavljaci")}>
                         Dobavljači
                     </Button>
-                        <Button onClick={load}>Osveži</Button>
-                        <LogoutButton />
+                    <Button onClick={load}>Osveži</Button>
                 </div>
             </div>
 

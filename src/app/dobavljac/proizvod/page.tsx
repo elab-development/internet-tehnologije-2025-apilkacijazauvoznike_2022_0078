@@ -55,7 +55,6 @@ export default function SupplierProductsPage() {
         const me = meJson.data as Me;
 
         if (me.uloga !== "DOBAVLJAC") {
-          setLoading(false);
           router.replace(homeByRole(me.uloga));
           return;
         }
@@ -102,7 +101,6 @@ export default function SupplierProductsPage() {
           <Button onClick={() => router.push("/dobavljac/proizvod/novi")}>
             + Novi proizvod
           </Button>
-          <LogoutButton />
         </div>
       </div>
 
