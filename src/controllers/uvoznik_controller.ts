@@ -1,6 +1,6 @@
 import { db } from "@/src/db";
 import { saradnja, korisnik, proizvod, kategorija } from "@/src/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or, isNull, notExists, aliasedTable } from "drizzle-orm";
 
 
 export async function getMojiDobavljaci(uvoznikId: number) {
@@ -20,6 +20,46 @@ export async function getMojiDobavljaci(uvoznikId: number) {
 
     return { status: 200, json: { ok: true, dobavljaci: rows } };
   } catch (err: any) {
+    return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
+  }
+}
+
+export async function getSviDobavljaciBezSaradnje(idUvoznik: number) {
+  try {
+    const rows = await db
+      .select({
+        id: korisnik.id,
+        imePrezime: korisnik.imePrezime,
+        email: korisnik.email,
+        status: korisnik.status,
+      })
+      .from(korisnik)
+      .where(
+        and(
+          eq(korisnik.uloga, "DOBAVLJAC"),
+          eq(korisnik.status, true), // Dobavljač mora biti aktivan kao korisnik
+          notExists(
+            db
+              .select({ x: saradnja.idSaradnja })
+              .from(saradnja)
+              .where(
+                and(
+                  eq(saradnja.idUvoznik, idUvoznik),
+                  eq(saradnja.idDobavljac, korisnik.id),
+                  // USLOV: Izbaci ga samo ako ima saradnju koja je "u toku" ili "aktivna"
+                  or(
+                    eq(saradnja.pending, true), 
+                    eq(saradnja.status, true)
+                  )
+                )
+              )
+          )
+        )
+      );
+
+    return { status: 200, json: { ok: true, dobavljaci: rows } };
+  } catch (err: any) {
+    console.error("Greška u upitu:", err); // Dodaj log da vidiš grešku u konzoli beka
     return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
   }
 }

@@ -1,0 +1,573 @@
+{
+  "id": "310c3e3b-d0a5-440d-aec6-babed7e58874",
+  "prevId": "40b58ba3-0a43-4dc5-a946-c0d909dd61db",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.faktura": {
+      "name": "faktura",
+      "schema": "",
+      "columns": {
+        "idFaktura": {
+          "name": "idFaktura",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "troskoviCarine": {
+          "name": "troskoviCarine",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "datumIzdavanja": {
+          "name": "datumIzdavanja",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "ukupnoTroskoviUvoza": {
+          "name": "ukupnoTroskoviUvoza",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "idSaradnja": {
+          "name": "idSaradnja",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "faktura_idSaradnja_saradnja_idSaradnja_fk": {
+          "name": "faktura_idSaradnja_saradnja_idSaradnja_fk",
+          "tableFrom": "faktura",
+          "tableTo": "saradnja",
+          "columnsFrom": [
+            "idSaradnja"
+          ],
+          "columnsTo": [
+            "idSaradnja"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kategorija": {
+      "name": "kategorija",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ime": {
+          "name": "ime",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "opis": {
+          "name": "opis",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "kategorija_ime_unique": {
+          "name": "kategorija_ime_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "ime"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kontejner": {
+      "name": "kontejner",
+      "schema": "",
+      "columns": {
+        "idKontejner": {
+          "name": "idKontejner",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "maxZapremina": {
+          "name": "maxZapremina",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cenaKontejnera": {
+          "name": "cenaKontejnera",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.korisnik": {
+      "name": "korisnik",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "imePrezime": {
+          "name": "imePrezime",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sifra": {
+          "name": "sifra",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uloga": {
+          "name": "uloga",
+          "type": "uloga",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "korisnik_email_unique": {
+          "name": "korisnik_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.proizvod": {
+      "name": "proizvod",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sifra": {
+          "name": "sifra",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "naziv": {
+          "name": "naziv",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slika": {
+          "name": "slika",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sirina": {
+          "name": "sirina",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "visina": {
+          "name": "visina",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duzina": {
+          "name": "duzina",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cena": {
+          "name": "cena",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idKategorija": {
+          "name": "idKategorija",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idDobavljac": {
+          "name": "idDobavljac",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "proizvod_idKategorija_kategorija_id_fk": {
+          "name": "proizvod_idKategorija_kategorija_id_fk",
+          "tableFrom": "proizvod",
+          "tableTo": "kategorija",
+          "columnsFrom": [
+            "idKategorija"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "proizvod_idDobavljac_korisnik_id_fk": {
+          "name": "proizvod_idDobavljac_korisnik_id_fk",
+          "tableFrom": "proizvod",
+          "tableTo": "korisnik",
+          "columnsFrom": [
+            "idDobavljac"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "proizvod_sifra_unique": {
+          "name": "proizvod_sifra_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "sifra"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.saradnja": {
+      "name": "saradnja",
+      "schema": "",
+      "columns": {
+        "idSaradnja": {
+          "name": "idSaradnja",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "idUvoznik": {
+          "name": "idUvoznik",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idDobavljac": {
+          "name": "idDobavljac",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "datumPocetka": {
+          "name": "datumPocetka",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "pending": {
+          "name": "pending",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {
+        "uq_saradnja_uvoznik_dobavljac": {
+          "name": "uq_saradnja_uvoznik_dobavljac",
+          "columns": [
+            {
+              "expression": "idUvoznik",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "idDobavljac",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "saradnja_idUvoznik_korisnik_id_fk": {
+          "name": "saradnja_idUvoznik_korisnik_id_fk",
+          "tableFrom": "saradnja",
+          "tableTo": "korisnik",
+          "columnsFrom": [
+            "idUvoznik"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "saradnja_idDobavljac_korisnik_id_fk": {
+          "name": "saradnja_idDobavljac_korisnik_id_fk",
+          "tableFrom": "saradnja",
+          "tableTo": "korisnik",
+          "columnsFrom": [
+            "idDobavljac"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.stavkaFakture": {
+      "name": "stavkaFakture",
+      "schema": "",
+      "columns": {
+        "rb": {
+          "name": "rb",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "idFaktura": {
+          "name": "idFaktura",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "idKontejner": {
+          "name": "idKontejner",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kolicina": {
+          "name": "kolicina",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iznosStavke": {
+          "name": "iznosStavke",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stavkaFakture_idFaktura_faktura_idFaktura_fk": {
+          "name": "stavkaFakture_idFaktura_faktura_idFaktura_fk",
+          "tableFrom": "stavkaFakture",
+          "tableTo": "faktura",
+          "columnsFrom": [
+            "idFaktura"
+          ],
+          "columnsTo": [
+            "idFaktura"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stavkaFakture_idKontejner_kontejner_idKontejner_fk": {
+          "name": "stavkaFakture_idKontejner_kontejner_idKontejner_fk",
+          "tableFrom": "stavkaFakture",
+          "tableTo": "kontejner",
+          "columnsFrom": [
+            "idKontejner"
+          ],
+          "columnsTo": [
+            "idKontejner"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.stavkaKontejnera": {
+      "name": "stavkaKontejnera",
+      "schema": "",
+      "columns": {
+        "rb": {
+          "name": "rb",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "idKontejner": {
+          "name": "idKontejner",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idProizvod": {
+          "name": "idProizvod",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kolicina": {
+          "name": "kolicina",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iznosStavke": {
+          "name": "iznosStavke",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "zapreminaStavke": {
+          "name": "zapreminaStavke",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stavkaKontejnera_idKontejner_kontejner_idKontejner_fk": {
+          "name": "stavkaKontejnera_idKontejner_kontejner_idKontejner_fk",
+          "tableFrom": "stavkaKontejnera",
+          "tableTo": "kontejner",
+          "columnsFrom": [
+            "idKontejner"
+          ],
+          "columnsTo": [
+            "idKontejner"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stavkaKontejnera_idProizvod_proizvod_id_fk": {
+          "name": "stavkaKontejnera_idProizvod_proizvod_id_fk",
+          "tableFrom": "stavkaKontejnera",
+          "tableTo": "proizvod",
+          "columnsFrom": [
+            "idProizvod"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.uloga": {
+      "name": "uloga",
+      "schema": "public",
+      "values": [
+        "ADMIN",
+        "UVOZNIK",
+        "DOBAVLJAC"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

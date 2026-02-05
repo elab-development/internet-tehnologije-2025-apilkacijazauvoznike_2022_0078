@@ -55,7 +55,6 @@ export default function IzmenaProizvodaPage() {
         const me = meJson.data as Me;
 
         if (me.uloga !== "DOBAVLJAC") {
-          setLoading(false);
           router.replace(homeByRole(me.uloga));
           return;
         }
@@ -173,7 +172,6 @@ export default function IzmenaProizvodaPage() {
             Nazad
           </Button>
 
-          <LogoutButton />
         </div>
 
       </div>

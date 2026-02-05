@@ -43,7 +43,6 @@ export default function NoviProizvodPage() {
         const me = meJson.data as Me;
 
         if (me.uloga !== "DOBAVLJAC") {
-          setLoading(false);
           router.replace(homeByRole(me.uloga));
           return;
         }
@@ -133,7 +132,6 @@ export default function NoviProizvodPage() {
             Nazad
           </Button>
 
-          <LogoutButton />
         </div>
       </div>
       {error && <div className="text-red-600">{error}</div>}
