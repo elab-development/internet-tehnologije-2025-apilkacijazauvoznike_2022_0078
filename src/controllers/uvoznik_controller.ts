@@ -16,7 +16,11 @@ export async function getMojiDobavljaci(uvoznikId: number) {
       })
       .from(saradnja)
       .innerJoin(korisnik, eq(saradnja.idDobavljac, korisnik.id))
-      .where(and(eq(saradnja.idUvoznik, uvoznikId), eq(saradnja.status, true)));
+      .where(and(
+  eq(saradnja.idUvoznik, uvoznikId),
+  eq(saradnja.status, true),
+  eq(saradnja.pending, false)
+));
 
     return { status: 200, json: { ok: true, dobavljaci: rows } };
   } catch (err: any) {
@@ -64,30 +68,52 @@ export async function getSviDobavljaciBezSaradnje(idUvoznik: number) {
   }
 }
 
-export async function getProizvodiMojihDobavljaca(uvoznikId: number) {
+
+type ProizvodiFilter = {
+  dobavljacId?: number;
+  kategorijaId?: number;
+};
+
+function isPosInt(n: any) {
+  return Number.isInteger(n) && n > 0;
+}
+
+export async function getProizvodiMojihDobavljaca(uvoznikId: number, filter: ProizvodiFilter = {}) {
   try {
+    const conditions: any[] = [
+  eq(saradnja.idUvoznik, uvoznikId),
+  eq(saradnja.status, true),
+  eq(saradnja.pending, false),
+];
+if (filter.dobavljacId && isPosInt(filter.dobavljacId)) {
+  conditions.push(eq(saradnja.idDobavljac, filter.dobavljacId));
+}
+
+if (filter.kategorijaId && isPosInt(filter.kategorijaId)) {
+  conditions.push(eq(proizvod.idKategorija, filter.kategorijaId));
+}
     const rows = await db
-      .select({
-        id: proizvod.id,
-        sifra: proizvod.sifra,
-        naziv: proizvod.naziv,
-        slika: proizvod.slika,
-        sirina: proizvod.sirina,
-        visina: proizvod.visina,
-        duzina: proizvod.duzina,
-        cena: proizvod.cena,
+  .select({
+    id: proizvod.id,
+    sifra: proizvod.sifra,
+    naziv: proizvod.naziv,
+    slika: proizvod.slika,
+    sirina: proizvod.sirina,
+    visina: proizvod.visina,
+    duzina: proizvod.duzina,
+    cena: proizvod.cena,
 
-        idKategorija: proizvod.idKategorija,
-        kategorijaIme: kategorija.ime,
+    idKategorija: proizvod.idKategorija,
+    kategorijaIme: kategorija.ime,
 
-        idDobavljac: proizvod.idDobavljac,
-        dobavljacIme: korisnik.imePrezime,
-      })
-      .from(saradnja)
-      .innerJoin(korisnik, eq(saradnja.idDobavljac, korisnik.id))
-      .innerJoin(proizvod, eq(proizvod.idDobavljac, saradnja.idDobavljac))
-      .leftJoin(kategorija, eq(proizvod.idKategorija, kategorija.id))
-      .where(and(eq(saradnja.idUvoznik, uvoznikId), eq(saradnja.status, true)));
+    idDobavljac: proizvod.idDobavljac,
+    dobavljacIme: korisnik.imePrezime,
+  })
+  .from(saradnja)
+  .innerJoin(korisnik, eq(saradnja.idDobavljac, korisnik.id))
+  .innerJoin(proizvod, eq(proizvod.idDobavljac, saradnja.idDobavljac))
+  .leftJoin(kategorija, eq(proizvod.idKategorija, kategorija.id))
+  .where(and(...conditions));
 
     return { status: 200, json: { ok: true, proizvodi: rows } };
   } catch (err: any) {
@@ -110,10 +136,11 @@ export async function getProizvodiDobavljacaAkoSaradjujemo(uvoznikId: number, do
       .select({ id: saradnja.idSaradnja })
       .from(saradnja)
       .where(and(
-        eq(saradnja.idUvoznik, uvoznikId),
-        eq(saradnja.idDobavljac, dobavljacId),
-        eq(saradnja.status, true)
-      ))
+  eq(saradnja.idUvoznik, uvoznikId),
+  eq(saradnja.idDobavljac, dobavljacId),
+  eq(saradnja.status, true),
+  eq(saradnja.pending, false)
+))
       .limit(1);
 
     if (s.length === 0) {

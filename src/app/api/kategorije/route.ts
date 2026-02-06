@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   try {
 
     const user = await requireUser();
-    requireRole(user, ["ADMIN"]);
+    requireRole(user, ["ADMIN", "DOBAVLJAC"]);
 
     const body = await req.json();
 
