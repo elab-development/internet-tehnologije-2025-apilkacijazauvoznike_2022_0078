@@ -9,6 +9,7 @@ export default function UvoznikLayout({ children }: { children: React.ReactNode 
           <nav className="flex gap-4">
             <Link href="/uvoznik/dobavljaci">Dobavljači</Link>
             <Link href="/uvoznik/proizvodi">Proizvodi</Link>
+            <Link href="/uvoznik/uporedi">Uporedi</Link>
             <Link href="/uvoznik/saradnje">Saradnje</Link>
           </nav>
 

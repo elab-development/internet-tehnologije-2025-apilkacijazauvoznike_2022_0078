@@ -6,7 +6,6 @@ import Input from "@/src/components/Input";
 import Button from "@/src/components/Button";
 import ProductCard from "@/src/components/ProductCard";
 import { homeByRole } from "@/src/lib/role_routes";
-import LogoutButton from "@/src/components/LogoutButton";
 
 type ProizvodRow = {
   id: number;
@@ -42,13 +41,11 @@ export default function UvoznikProizvodiPage() {
   const [proizvodi, setProizvodi] = useState<ProizvodRow[]>([]);
   const [q, setQ] = useState("");
 
-  // ✅ NOVO: filteri za dropdown
   const [selectedDobavljacId, setSelectedDobavljacId] = useState<number | "">("");
   const [selectedKategorijaId, setSelectedKategorijaId] = useState<number | "">("");
 
   let redirected = false;
 
-  // ✅ NOVO: helper koji pravi URL sa query parametrima
   function buildUrl() {
     const params = new URLSearchParams();
     if (selectedDobavljacId !== "") params.set("dobavljacId", String(selectedDobavljacId));
@@ -89,24 +86,18 @@ export default function UvoznikProizvodiPage() {
     } catch (e: any) {
       setErr(e?.message ?? "Neočekivana greška");
     } finally {
-      if (!redirected) {
-        setLoading(false);
-      }
+      if (!redirected) setLoading(false);
     }
   }
 
-  // ✅ prvi put učitaj SVE (bez filtera)
   useEffect(() => {
     load(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ NOVO: opcije za dropdown dobijamo iz proizvoda (sigurno i bez dodatnih API-ja)
   const dobavljacOptions = useMemo(() => {
     const map = new Map<number, string>();
-    for (const p of proizvodi) {
-      map.set(p.idDobavljac, p.dobavljacIme ?? `Dobavljač ${p.idDobavljac}`);
-    }
+    for (const p of proizvodi) map.set(p.idDobavljac, p.dobavljacIme ?? `Dobavljač ${p.idDobavljac}`);
     return Array.from(map.entries())
       .map(([id, name]) => ({ id, name }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -114,9 +105,7 @@ export default function UvoznikProizvodiPage() {
 
   const kategorijaOptions = useMemo(() => {
     const map = new Map<number, string>();
-    for (const p of proizvodi) {
-      map.set(p.idKategorija, p.kategorijaIme ?? `Kategorija ${p.idKategorija}`);
-    }
+    for (const p of proizvodi) map.set(p.idKategorija, p.kategorijaIme ?? `Kategorija ${p.idKategorija}`);
     return Array.from(map.entries())
       .map(([id, name]) => ({ id, name }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -144,7 +133,6 @@ export default function UvoznikProizvodiPage() {
         <div style={{ display: "flex", gap: 8 }}>
           <Button onClick={() => router.push("/uvoznik/dobavljaci")}>Dobavljači</Button>
 
-          {/* ✅ Osveži: resetuje filtere i učita SVE */}
           <Button
             onClick={() => {
               setSelectedDobavljacId("");
@@ -157,7 +145,6 @@ export default function UvoznikProizvodiPage() {
         </div>
       </div>
 
-      {/* ✅ NOVO: dropdown filteri */}
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
         <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
           Dobavljač:
@@ -189,8 +176,8 @@ export default function UvoznikProizvodiPage() {
           </select>
         </label>
 
-        {/* ✅ Primeni filtere: učita sa query parametrima */}
         <Button onClick={() => load(true)}>Primeni filtere</Button>
+        <Button onClick={() => router.push("/uvoznik/uporedi")}>Otvori upoređivanje</Button>
       </div>
 
       <Input
@@ -210,10 +197,15 @@ export default function UvoznikProizvodiPage() {
       ) : (
         <div style={{ display: "grid", gap: 12 }}>
           {filtered.map((p) => (
-            <div key={p.id} style={{ display: "grid", gap: 6 }}>
-              <ProductCard p={p} />
-              <div style={{ opacity: 0.85 }}>
-                Dobavljač: <b>{p.dobavljacIme ?? "-"}</b> • Kategorija: <b>{p.kategorijaIme ?? "-"}</b>
+            <div key={p.id} style={{ display: "grid", gap: 8 }}>
+              <ProductCard p={p as any} />
+
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                <div style={{ opacity: 0.85 }}>
+                  Dobavljač: <b>{p.dobavljacIme ?? "-"}</b> • Kategorija: <b>{p.kategorijaIme ?? "-"}</b>
+                </div>
+
+                <Button onClick={() => router.push(`/uvoznik/uporedi?left=${p.id}`)}>Uporedi</Button>
               </div>
             </div>
           ))}

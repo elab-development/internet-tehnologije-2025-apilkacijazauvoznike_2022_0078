@@ -169,4 +169,48 @@ export async function getProizvodiDobavljacaAkoSaradjujemo(uvoznikId: number, do
   } catch (err: any) {
     return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
   }
+
+}
+export async function getProizvodMojihDobavljacaById(uvoznikId: number, proizvodId: number) {
+  try {
+    const rows = await db
+      .select({
+        id: proizvod.id,
+        sifra: proizvod.sifra,
+        naziv: proizvod.naziv,
+        slika: proizvod.slika,
+        sirina: proizvod.sirina,
+        visina: proizvod.visina,
+        duzina: proizvod.duzina,
+        cena: proizvod.cena,
+
+        idKategorija: proizvod.idKategorija,
+        kategorijaIme: kategorija.ime,
+
+        idDobavljac: proizvod.idDobavljac,
+        dobavljacIme: korisnik.imePrezime,
+      })
+      .from(saradnja)
+      .innerJoin(korisnik, eq(saradnja.idDobavljac, korisnik.id))
+      .innerJoin(proizvod, eq(proizvod.idDobavljac, saradnja.idDobavljac))
+      .leftJoin(kategorija, eq(proizvod.idKategorija, kategorija.id))
+      .where(
+        and(
+          eq(saradnja.idUvoznik, uvoznikId),
+          eq(saradnja.status, true),
+          eq(saradnja.pending, false),
+          eq(proizvod.id, proizvodId)
+        )
+      )
+      .limit(1);
+
+    const p = rows[0];
+    if (!p) {
+      return { status: 404, json: { ok: false, error: "NOT_FOUND", message: "Proizvod nije pronađen." } };
+    }
+
+    return { status: 200, json: { ok: true, proizvod: p } };
+  } catch (err: any) {
+    return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
+  }
 }
