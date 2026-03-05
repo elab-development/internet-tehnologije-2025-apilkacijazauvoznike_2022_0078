@@ -42,13 +42,14 @@ export default function UvoznikProizvodiPage() {
   const [proizvodi, setProizvodi] = useState<ProizvodRow[]>([]);
   const [q, setQ] = useState("");
 
-  // ✅ NOVO: filteri za dropdown
   const [selectedDobavljacId, setSelectedDobavljacId] = useState<number | "">("");
   const [selectedKategorijaId, setSelectedKategorijaId] = useState<number | "">("");
 
+  const [addingId, setAddingId] = useState<number | null>(null);
+  const [qtyById, setQtyById] = useState<Record<number, number>>({});
+
   let redirected = false;
 
-  // ✅ NOVO: helper koji pravi URL sa query parametrima
   function buildUrl() {
     const params = new URLSearchParams();
     if (selectedDobavljacId !== "") params.set("dobavljacId", String(selectedDobavljacId));
@@ -85,28 +86,82 @@ export default function UvoznikProizvodiPage() {
         return;
       }
 
-      setProizvodi(json.proizvodi ?? []);
+      const list = json.proizvodi ?? [];
+      setProizvodi(list);
+
+      // inicijalizuj qty na 1 za sve koji nisu u map-i
+      setQtyById((prev) => {
+        const next = { ...prev };
+        for (const p of list) {
+          if (!next[p.id] || next[p.id] < 1) next[p.id] = 1;
+        }
+        return next;
+      });
     } catch (e: any) {
       setErr(e?.message ?? "Neočekivana greška");
     } finally {
-      if (!redirected) {
-        setLoading(false);
-      }
+      if (!redirected) setLoading(false);
     }
   }
 
-  // ✅ prvi put učitaj SVE (bez filtera)
   useEffect(() => {
     load(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ✅ NOVO: opcije za dropdown dobijamo iz proizvoda (sigurno i bez dodatnih API-ja)
+  async function addToCart(idProizvod: number) {
+    const qty = Math.max(1, Number(qtyById[idProizvod] ?? 1));
+
+    try {
+      setAddingId(idProizvod);
+
+      const doRequest = async (forceNewContainer: boolean) => {
+        const res = await fetch("/api/uvoznik/kontejner/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            idProizvod,
+            kolicina: qty,
+            forceNewContainer,
+          }),
+        });
+
+        const json = await res.json();
+        return { res, json };
+      };
+
+      const { res, json } = await doRequest(false);
+
+      if (res.status === 409 && json?.error === "CONTAINER_OVERFLOW") {
+        const ok = confirm(json?.message ?? "Nema mesta u kontejneru. Otvoriti novi kontejner?");
+        if (!ok) return;
+
+        const retry = await doRequest(true);
+        if (!retry.res.ok || !retry.json?.ok) {
+          alert(retry.json?.message ?? retry.json?.error ?? "Greška pri dodavanju");
+          return;
+        }
+
+        alert("Dodato (u novi kontejner)!");
+        return;
+      }
+
+      if (!res.ok || !json?.ok) {
+        alert(json?.message ?? json?.error ?? "Greška pri dodavanju");
+        return;
+      }
+
+      alert("Dodato u korpu!");
+    } catch (e: any) {
+      alert(e?.message ?? "Greška");
+    } finally {
+      setAddingId(null);
+    }
+  }
+
   const dobavljacOptions = useMemo(() => {
     const map = new Map<number, string>();
-    for (const p of proizvodi) {
-      map.set(p.idDobavljac, p.dobavljacIme ?? `Dobavljač ${p.idDobavljac}`);
-    }
+    for (const p of proizvodi) map.set(p.idDobavljac, p.dobavljacIme ?? `Dobavljač ${p.idDobavljac}`);
     return Array.from(map.entries())
       .map(([id, name]) => ({ id, name }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -114,9 +169,7 @@ export default function UvoznikProizvodiPage() {
 
   const kategorijaOptions = useMemo(() => {
     const map = new Map<number, string>();
-    for (const p of proizvodi) {
-      map.set(p.idKategorija, p.kategorijaIme ?? `Kategorija ${p.idKategorija}`);
-    }
+    for (const p of proizvodi) map.set(p.idKategorija, p.kategorijaIme ?? `Kategorija ${p.idKategorija}`);
     return Array.from(map.entries())
       .map(([id, name]) => ({ id, name }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -135,16 +188,23 @@ export default function UvoznikProizvodiPage() {
     });
   }, [proizvodi, q]);
 
+  function incQty(id: number) {
+    setQtyById((prev) => ({ ...prev, [id]: Math.min(999, (prev[id] ?? 1) + 1) }));
+  }
+  function decQty(id: number) {
+    setQtyById((prev) => ({ ...prev, [id]: Math.max(1, (prev[id] ?? 1) - 1) }));
+  }
+
   if (loading) return <div style={{ padding: 16 }}>Učitavanje...</div>;
 
   return (
     <div style={{ padding: 16, display: "grid", gap: 16 }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
         <h1>Proizvodi mojih dobavljača</h1>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <Button onClick={() => router.push("/uvoznik/kontejner")}>Moja korpa</Button>
           <Button onClick={() => router.push("/uvoznik/dobavljaci")}>Dobavljači</Button>
 
-          {/* ✅ Osveži: resetuje filtere i učita SVE */}
           <Button
             onClick={() => {
               setSelectedDobavljacId("");
@@ -154,10 +214,11 @@ export default function UvoznikProizvodiPage() {
           >
             Osveži
           </Button>
+
+          <LogoutButton />
         </div>
       </div>
 
-      {/* ✅ NOVO: dropdown filteri */}
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
         <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
           Dobavljač:
@@ -189,7 +250,6 @@ export default function UvoznikProizvodiPage() {
           </select>
         </label>
 
-        {/* ✅ Primeni filtere: učita sa query parametrima */}
         <Button onClick={() => load(true)}>Primeni filtere</Button>
       </div>
 
@@ -210,10 +270,24 @@ export default function UvoznikProizvodiPage() {
       ) : (
         <div style={{ display: "grid", gap: 12 }}>
           {filtered.map((p) => (
-            <div key={p.id} style={{ display: "grid", gap: 6 }}>
+            <div key={p.id} style={{ display: "grid", gap: 6, border: "1px solid #eee", padding: 12, borderRadius: 10 }}>
               <ProductCard p={p} />
               <div style={{ opacity: 0.85 }}>
                 Dobavljač: <b>{p.dobavljacIme ?? "-"}</b> • Kategorija: <b>{p.kategorijaIme ?? "-"}</b>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <Button onClick={() => decQty(p.id)} disabled={addingId === p.id}>-</Button>
+                  <div style={{ minWidth: 30, textAlign: "center" }}>
+                    <b>{qtyById[p.id] ?? 1}</b>
+                  </div>
+                  <Button onClick={() => incQty(p.id)} disabled={addingId === p.id}>+</Button>
+                </div>
+
+                <Button onClick={() => addToCart(p.id)} disabled={addingId === p.id}>
+                  {addingId === p.id ? "Dodavanje..." : "Dodaj u korpu"}
+                </Button>
               </div>
             </div>
           ))}

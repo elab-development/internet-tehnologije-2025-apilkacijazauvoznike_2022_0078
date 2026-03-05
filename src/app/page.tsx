@@ -48,10 +48,6 @@ export default function HomePage() {
               </Button>
             )}
           </div>
-
-          <p className="mt-4 text-sm text-gray-500">
-            Zaštićene rute (uvoznik/dobavljač) su zaštićene middleware-om.
-          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">

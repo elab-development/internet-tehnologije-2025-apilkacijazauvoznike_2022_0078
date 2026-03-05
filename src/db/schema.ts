@@ -1,6 +1,13 @@
 import { pgTable, serial, text, varchar, integer, doublePrecision, timestamp, boolean, uniqueIndex,pgEnum } from "drizzle-orm/pg-core";
 
 export const ulogaEnum = pgEnum("uloga", ["ADMIN", "UVOZNIK", "DOBAVLJAC"]);
+export const kontejnerStatusEnum = pgEnum("kontejner_status", [
+  "OPEN",
+  "CLOSED",
+  "REOPEN",
+  "PAUSED",
+  "PAID"
+]);
 
 export const korisnik = pgTable("korisnik", {
   id: serial("id").primaryKey(),
@@ -49,10 +56,22 @@ export const saradnja = pgTable("saradnja", {
 
 export const kontejner = pgTable("kontejner", {
   idKontejner: serial("idKontejner").primaryKey(),
-  maxZapremina: doublePrecision("maxZapremina").notNull(), 
-//   trenutnaZapremina: doublePrecision("trenutna_zapremina").default(0), //?
+
+  idUvoznik: integer("idUvoznik")
+    .notNull()
+    .references(() => korisnik.id, { onDelete: "cascade" }),
+  
+  idSaradnja: integer("idSaradnja")
+    .notNull()
+    .references(() => saradnja.idSaradnja, { onDelete: "restrict" }),
+
+  status: kontejnerStatusEnum("status").notNull().default("OPEN"),
+
+  maxZapremina: doublePrecision("maxZapremina").notNull(),
+  trenutnaZapremina: doublePrecision("trenutna_zapremina").default(0),
+
   cenaKontejnera: doublePrecision("cenaKontejnera").notNull(),
-//   ukupnaCenaKontejnera: doublePrecision("ukupna_cena_kontejnera").default(0), //?
+  ukupnaCenaKontejnera: doublePrecision("ukupna_cena_kontejnera").default(0),
 });
 
 export const stavkaKontejnera = pgTable("stavkaKontejnera", {

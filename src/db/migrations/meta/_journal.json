@@ -36,6 +36,34 @@
       "when": 1770295628525,
       "tag": "0004_many_pyro",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771936345395,
+      "tag": "0005_narrow_mandarin",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771956845874,
+      "tag": "0006_fantastic_blue_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772461758938,
+      "tag": "0007_wakeful_multiple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772461977596,
+      "tag": "0008_pale_weapon_omega",
+      "breakpoints": true
     }
   ]
 }
