@@ -31,9 +31,9 @@ export default function ProductCard({
         <div className="font-semibold">{p.naziv}</div>
         <div className="text-sm text-gray-600">Šifra: {p.sifra}</div>
         <div className="text-sm">
-          Dimenzije: {p.sirina} × {p.visina} × {p.duzina}
+          Dimenzije: {p.sirina}cm × {p.visina}cm × {p.duzina}cm
         </div>
-        <div className="text-sm font-medium">Cena: {p.cena}</div>
+        <div className="text-sm font-medium">Cena: {p.cena} €</div>
       </div>
       {(onEdit || onDelete) && (
         <div className="flex flex-col gap-2">

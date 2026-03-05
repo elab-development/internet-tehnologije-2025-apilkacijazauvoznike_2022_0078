@@ -41,16 +41,11 @@ export async function getSviDobavljaciBezSaradnje(idUvoznik: number) {
       .where(
         and(
           eq(korisnik.uloga, "DOBAVLJAC"),
-          eq(korisnik.status, true), // Dobavljač mora biti aktivan kao korisnik
+          eq(korisnik.status, true), 
           notExists(
-            db
-              .select({ x: saradnja.idSaradnja })
-              .from(saradnja)
-              .where(
-                and(
+            db.select({ x: saradnja.idSaradnja }).from(saradnja).where(and(
                   eq(saradnja.idUvoznik, idUvoznik),
                   eq(saradnja.idDobavljac, korisnik.id),
-                  // USLOV: Izbaci ga samo ako ima saradnju koja je "u toku" ili "aktivna"
                   or(
                     eq(saradnja.pending, true), 
                     eq(saradnja.status, true)
@@ -63,7 +58,6 @@ export async function getSviDobavljaciBezSaradnje(idUvoznik: number) {
 
     return { status: 200, json: { ok: true, dobavljaci: rows } };
   } catch (err: any) {
-    console.error("Greška u upitu:", err); // Dodaj log da vidiš grešku u konzoli beka
     return { status: 500, json: { ok: false, error: err?.message ?? "Greška" } };
   }
 }

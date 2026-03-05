@@ -9,6 +9,7 @@ export default function DobavljacLayout({ children }: { children: React.ReactNod
           <nav className="flex gap-4">
             <Link href="/dobavljac/proizvod">Moji proizvodi</Link>
             <Link href="/dobavljac/proizvod/novi">Novi proizvod</Link>
+            <Link href="/dobavljac/istorija">Istorija porudžbina</Link>
             <Link href="/dobavljac/saradnje">Saradnje</Link>
           </nav>
 
