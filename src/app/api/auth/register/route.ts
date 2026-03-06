@@ -10,11 +10,16 @@ export async function POST(req: Request) {
       imePrezime: body.imePrezime,
       email: body.email,
       sifra: body.sifra,
-      uloga: body.uloga, // opcionalno
+      uloga: body.uloga,
     });
 
     if (!result.ok) {
-      const status = result.error.code === "EMAIL_EXISTS" ? 409 : 400;
+      const status =
+        result.error.code === "EMAIL_EXISTS"
+          ? 409
+          : result.error.code === "INVALID_ROLE"
+          ? 403
+          : 400;
 
       return NextResponse.json(
         { ok: false, error: result.error.code, message: result.error.message },
@@ -33,7 +38,12 @@ export async function POST(req: Request) {
     return res;
   } catch (err: any) {
     return NextResponse.json(
-      { ok: false, error: "INTERNAL_ERROR", message: "Greska pri registraciji", details: err?.message },
+      {
+        ok: false,
+        error: "INTERNAL_ERROR",
+        message: "Greska pri registraciji",
+        details: err?.message,
+      },
       { status: 500 }
     );
   }

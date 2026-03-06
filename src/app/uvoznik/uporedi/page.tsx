@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@/src/components/Button";
 
@@ -39,7 +39,7 @@ function parseId(v: string | null) {
   return n;
 }
 
-export default function UvoznikUporediPage() {
+function UvoznikUporediContent() {
   const router = useRouter();
   const sp = useSearchParams();
 
@@ -49,21 +49,17 @@ export default function UvoznikUporediPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  // opcije (uvoznik vidi samo svoje dobavljače)
   const [dobavljaci, setDobavljaci] = useState<DobavljacOpt[]>([]);
   const [kategorije, setKategorije] = useState<KategorijaOpt[]>([]);
 
-  // slot state
   const [left, setLeft] = useState<ProizvodRow | null>(null);
   const [right, setRight] = useState<ProizvodRow | null>(null);
 
-  // UI za desni slot (izbor)
   const [rDobId, setRDobId] = useState<number | "">("");
   const [rKatId, setRKatId] = useState<number | "">("");
   const [rProizvodi, setRProizvodi] = useState<ProizvodRow[]>([]);
   const [rProizvodId, setRProizvodId] = useState<number | "">("");
 
-  // UI za levi slot (ako nema query left)
   const [lDobId, setLDobId] = useState<number | "">("");
   const [lKatId, setLKatId] = useState<number | "">("");
   const [lProizvodi, setLProizvodi] = useState<ProizvodRow[]>([]);
@@ -113,7 +109,6 @@ export default function UvoznikUporediPage() {
     try {
       await loadOptions();
 
-      // ako je došlo iz "Uporedi" dugmeta
       if (leftFromQuery) {
         const p = await fetchProductById(leftFromQuery);
         setLeft(p);
@@ -161,7 +156,6 @@ export default function UvoznikUporediPage() {
     const p = await fetchProductById(Number(lProizvodId));
     setLeft(p);
 
-    // očisti izbor UI (ostavi dob/kat kao što je)
     setLProizvodId("");
     setLProizvodi([]);
   }
@@ -177,12 +171,10 @@ export default function UvoznikUporediPage() {
 
   function clearLeft() {
     setLeft(null);
-    // reset UI za izbor levog
     setLDobId("");
     setLKatId("");
     setLProizvodi([]);
     setLProizvodId("");
-    // skini query param (da ne vraća levo posle refresh)
     router.replace("/uvoznik/uporedi");
   }
 
@@ -208,7 +200,6 @@ export default function UvoznikUporediPage() {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        {/* LEFT */}
         <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12, minHeight: 380 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
             <b>Proizvod A</b>
@@ -257,9 +248,15 @@ export default function UvoznikUporediPage() {
                 </select>
               </label>
 
-              <Button onClick={async () => {
-                try { await loadLeftList(); } catch (e:any) { setErr(e?.message ?? "Greška"); }
-              }}>
+              <Button
+                onClick={async () => {
+                  try {
+                    await loadLeftList();
+                  } catch (e: any) {
+                    setErr(e?.message ?? "Greška");
+                  }
+                }}
+              >
                 Prikaži proizvode
               </Button>
 
@@ -281,9 +278,15 @@ export default function UvoznikUporediPage() {
                     </select>
                   </label>
 
-                  <Button onClick={async () => {
-                    try { await pickLeft(); } catch (e:any) { setErr(e?.message ?? "Greška"); }
-                  }}>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await pickLeft();
+                      } catch (e: any) {
+                        setErr(e?.message ?? "Greška");
+                      }
+                    }}
+                  >
                     Izaberi proizvod A
                   </Button>
                 </>
@@ -302,7 +305,6 @@ export default function UvoznikUporediPage() {
           )}
         </div>
 
-        {/* RIGHT */}
         <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12, minHeight: 380 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
             <b>Proizvod B</b>
@@ -351,9 +353,15 @@ export default function UvoznikUporediPage() {
                 </select>
               </label>
 
-              <Button onClick={async () => {
-                try { await loadRightList(); } catch (e:any) { setErr(e?.message ?? "Greška"); }
-              }}>
+              <Button
+                onClick={async () => {
+                  try {
+                    await loadRightList();
+                  } catch (e: any) {
+                    setErr(e?.message ?? "Greška");
+                  }
+                }}
+              >
                 Prikaži proizvode
               </Button>
 
@@ -375,9 +383,15 @@ export default function UvoznikUporediPage() {
                     </select>
                   </label>
 
-                  <Button onClick={async () => {
-                    try { await pickRight(); } catch (e:any) { setErr(e?.message ?? "Greška"); }
-                  }}>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await pickRight();
+                      } catch (e: any) {
+                        setErr(e?.message ?? "Greška");
+                      }
+                    }}
+                  >
                     Izaberi proizvod B
                   </Button>
                 </>
@@ -397,10 +411,17 @@ export default function UvoznikUporediPage() {
         </div>
       </div>
 
-      {/* mala poruka ispod */}
       <div style={{ opacity: 0.85 }}>
         {canCompare ? "✅ Izabrana su oba proizvoda – možete ih porediti." : "Izaberite oba proizvoda da biste uporedili."}
       </div>
     </div>
+  );
+}
+
+export default function UvoznikUporediPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 16 }}>Učitavanje...</div>}>
+      <UvoznikUporediContent />
+    </Suspense>
   );
 }

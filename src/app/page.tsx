@@ -22,7 +22,7 @@ export default function HomePage() {
         if (json && (json as any).ok && (json as any).data?.uloga) {
           setUloga((json as any).data.uloga);
         }
-      } catch { }
+      } catch {}
     })();
   }, []);
 
@@ -37,9 +37,12 @@ export default function HomePage() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             {!uloga && (
-              <Button onClick={() => router.push("/login")}>
-                Login
-              </Button>
+              <>
+                <Button onClick={() => router.push("/login")}>Login</Button>
+                <Button variant="secondary" onClick={() => router.push("/register")}>
+                  Register
+                </Button>
+              </>
             )}
 
             {uloga && (
