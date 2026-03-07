@@ -13,6 +13,7 @@ export default function UvoznikLayout({ children }: { children: React.ReactNode 
             <Link href="/uvoznik/uporedi">Uporedi</Link>
             <Link href="/uvoznik/istorija">Istorija porudžbina</Link>
             <Link href="/uvoznik/saradnje">Saradnje</Link>
+            <Link href="/uvoznik/analitika">Analitika</Link>
           </nav>
 
           <LogoutButton />
