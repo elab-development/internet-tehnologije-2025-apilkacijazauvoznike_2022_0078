@@ -33,6 +33,18 @@ type ApiResp = {
   message?: string;
 };
 
+type KursResp = {
+  ok: boolean;
+  from?: string;
+  to?: string;
+  rate?: number;
+  date?: string | null;
+  error?: string;
+  message?: string;
+};
+
+type Valuta = "EUR" | "USD";
+
 export default function UvoznikProizvodiPage() {
   const router = useRouter();
 
@@ -48,12 +60,25 @@ export default function UvoznikProizvodiPage() {
   const [addingId, setAddingId] = useState<number | null>(null);
   const [qtyById, setQtyById] = useState<Record<number, number>>({});
 
+  const [valuta, setValuta] = useState<Valuta>("EUR");
+  const [kurs, setKurs] = useState<number>(1);
+  const [kursDatum, setKursDatum] = useState<string | null>(null);
+  const [loadingKurs, setLoadingKurs] = useState(false);
+  const [kursErr, setKursErr] = useState<string | null>(null);
+
   let redirected = false;
 
   function buildUrl() {
     const params = new URLSearchParams();
-    if (selectedDobavljacId !== "") params.set("dobavljacId", String(selectedDobavljacId));
-    if (selectedKategorijaId !== "") params.set("kategorijaId", String(selectedKategorijaId));
+
+    if (selectedDobavljacId !== "") {
+      params.set("dobavljacId", String(selectedDobavljacId));
+    }
+
+    if (selectedKategorijaId !== "") {
+      params.set("kategorijaId", String(selectedKategorijaId));
+    }
+
     const qs = params.toString();
     return `/api/uvoznik/proizvodi${qs ? `?${qs}` : ""}`;
   }
@@ -63,7 +88,11 @@ export default function UvoznikProizvodiPage() {
     setErr(null);
 
     try {
-      const meRes = await fetch("/api/auth/me", { credentials: "include", cache: "no-store" });
+      const meRes = await fetch("/api/auth/me", {
+        credentials: "include",
+        cache: "no-store",
+      });
+
       if (!meRes.ok) {
         router.push("/login");
         return;
@@ -79,7 +108,12 @@ export default function UvoznikProizvodiPage() {
       }
 
       const url = withFilters ? buildUrl() : "/api/uvoznik/proizvodi";
-      const res = await fetch(url, { credentials: "include", cache: "no-store" });
+
+      const res = await fetch(url, {
+        credentials: "include",
+        cache: "no-store",
+      });
+
       const json: ApiResp = await res.json();
 
       if (!res.ok || !json.ok) {
@@ -90,12 +124,15 @@ export default function UvoznikProizvodiPage() {
       const list = json.proizvodi ?? [];
       setProizvodi(list);
 
-      // inicijalizuj qty na 1 za sve proizvode koji još nemaju vrednost
       setQtyById((prev) => {
         const next = { ...prev };
+
         for (const p of list) {
-          if (!next[p.id] || next[p.id] < 1) next[p.id] = 1;
+          if (!next[p.id] || next[p.id] < 1) {
+            next[p.id] = 1;
+          }
         }
+
         return next;
       });
     } catch (e: any) {
@@ -105,10 +142,50 @@ export default function UvoznikProizvodiPage() {
     }
   }
 
+  async function loadKurs(nextValuta: Valuta) {
+    setLoadingKurs(true);
+    setKursErr(null);
+
+    try {
+      if (nextValuta === "EUR") {
+        setKurs(1);
+        setKursDatum(null);
+        return;
+      }
+
+      const res = await fetch(`/api/kurs?from=EUR&to=${nextValuta}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      const json: KursResp = await res.json();
+
+      if (!res.ok || !json.ok || typeof json.rate !== "number") {
+        setKursErr(json.message ?? json.error ?? "Greška pri učitavanju kursa.");
+        setKurs(1);
+        setKursDatum(null);
+        return;
+      }
+
+      setKurs(json.rate);
+      setKursDatum(json.date ?? null);
+    } catch (e: any) {
+      setKursErr(e?.message ?? "Greška pri učitavanju kursa.");
+      setKurs(1);
+      setKursDatum(null);
+    } finally {
+      setLoadingKurs(false);
+    }
+  }
+
   useEffect(() => {
     load(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    loadKurs(valuta);
+  }, [valuta]);
 
   async function addToCart(idProizvod: number) {
     const qty = Math.max(1, Number(qtyById[idProizvod] ?? 1));
@@ -135,7 +212,10 @@ export default function UvoznikProizvodiPage() {
       const firstTry = await doRequest(false);
 
       if (firstTry.res.status === 409 && firstTry.json?.error === "CONTAINER_OVERFLOW") {
-        const ok = confirm(firstTry.json?.message ?? "Nema mesta u kontejneru. Otvoriti novi kontejner?");
+        const ok = confirm(
+          firstTry.json?.message ?? "Nema mesta u kontejneru. Otvoriti novi kontejner?"
+        );
+
         if (!ok) return;
 
         const retry = await doRequest(true);
@@ -215,17 +295,35 @@ export default function UvoznikProizvodiPage() {
     }));
   }
 
+  function formatBroj(vrednost: number) {
+    try {
+      return new Intl.NumberFormat("sr-RS", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(vrednost);
+    } catch {
+      return vrednost.toFixed(2);
+    }
+  }
+
   if (loading) return <div style={{ padding: 16 }}>Učitavanje...</div>;
 
   return (
     <div style={{ padding: 16, display: "grid", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: 12,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
         <h1>Proizvodi mojih dobavljača</h1>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           <Button onClick={() => router.push("/uvoznik/kontejner")}>Moja korpa</Button>
           <Button onClick={() => router.push("/uvoznik/dobavljaci")}>Dobavljači</Button>
-
           <Button
             onClick={() => {
               setSelectedDobavljacId("");
@@ -235,7 +333,6 @@ export default function UvoznikProizvodiPage() {
           >
             Osveži
           </Button>
-
           <LogoutButton />
         </div>
       </div>
@@ -245,7 +342,9 @@ export default function UvoznikProizvodiPage() {
           Dobavljač:
           <select
             value={selectedDobavljacId}
-            onChange={(e) => setSelectedDobavljacId(e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) =>
+              setSelectedDobavljacId(e.target.value === "" ? "" : Number(e.target.value))
+            }
           >
             <option value="">Svi</option>
             {dobavljacOptions.map((o) => (
@@ -260,7 +359,9 @@ export default function UvoznikProizvodiPage() {
           Kategorija:
           <select
             value={selectedKategorijaId}
-            onChange={(e) => setSelectedKategorijaId(e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) =>
+              setSelectedKategorijaId(e.target.value === "" ? "" : Number(e.target.value))
+            }
           >
             <option value="">Sve</option>
             {kategorijaOptions.map((o) => (
@@ -274,6 +375,30 @@ export default function UvoznikProizvodiPage() {
         <Button onClick={() => load(true)}>Primeni filtere</Button>
         <Button onClick={() => router.push("/uvoznik/uporedi")}>Otvori upoređivanje</Button>
       </div>
+
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          Valuta:
+          <select value={valuta} onChange={(e) => setValuta(e.target.value as Valuta)}>
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+          </select>
+        </label>
+      </div>
+
+      {valuta !== "EUR" && kursErr === null && (
+        <div>
+          Trenutni kurs: <b>1 EUR = {formatBroj(kurs)} {valuta}</b>
+          {loadingKurs ? " (učitavanje kursa...)" : ""}
+          {kursDatum ? ` (datum: ${kursDatum})` : ""}
+        </div>
+      )}
+
+      {kursErr && (
+        <div style={{ padding: 10, border: "1px solid #ccc", borderRadius: 8 }}>
+          <b>Greška kursa:</b> {kursErr}
+        </div>
+      )}
 
       <Input
         value={q}
@@ -291,48 +416,68 @@ export default function UvoznikProizvodiPage() {
         <div>Nema proizvoda (ili nema aktivnih saradnji).</div>
       ) : (
         <div style={{ display: "grid", gap: 12 }}>
-          {filtered.map((p) => (
-            <div
-              key={p.id}
-              style={{
-                display: "grid",
-                gap: 8,
-                border: "1px solid #eee",
-                padding: 12,
-                borderRadius: 10,
-              }}
-            >
-              <ProductCard p={p as any} />
+          {filtered.map((p) => {
+            const konvertovanaCena = p.cena * kurs;
 
-              <div style={{ opacity: 0.85 }}>
-                Dobavljač: <b>{p.dobavljacIme ?? "-"}</b> • Kategorija: <b>{p.kategorijaIme ?? "-"}</b>
-              </div>
+            return (
+              <div
+                key={p.id}
+                style={{
+                  display: "grid",
+                  gap: 8,
+                  border: "1px solid #eee",
+                  padding: 12,
+                  borderRadius: 10,
+                }}
+              >
+                <ProductCard p={p as any} />
 
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                <Button onClick={() => router.push(`/uvoznik/uporedi?left=${p.id}`)}>Uporedi</Button>
+                <div style={{ opacity: 0.85 }}>
+                  Dobavljač: <b>{p.dobavljacIme ?? "-"}</b> • Kategorija: <b>{p.kategorijaIme ?? "-"}</b>
+                </div>
 
-                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <Button onClick={() => decQty(p.id)} disabled={addingId === p.id}>
-                      -
-                    </Button>
+                {valuta !== "EUR" && (
+                  <div>
+                    Preračunata cena: <b>≈ {formatBroj(konvertovanaCena)} {valuta}</b>
+                  </div>
+                )}
 
-                    <div style={{ minWidth: 30, textAlign: "center" }}>
-                      <b>{qtyById[p.id] ?? 1}</b>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                  }}
+                >
+                  <Button onClick={() => router.push(`/uvoznik/uporedi?left=${p.id}`)}>
+                    Uporedi
+                  </Button>
+
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <Button onClick={() => decQty(p.id)} disabled={addingId === p.id}>
+                        -
+                      </Button>
+
+                      <div style={{ minWidth: 30, textAlign: "center" }}>
+                        <b>{qtyById[p.id] ?? 1}</b>
+                      </div>
+
+                      <Button onClick={() => incQty(p.id)} disabled={addingId === p.id}>
+                        +
+                      </Button>
                     </div>
 
-                    <Button onClick={() => incQty(p.id)} disabled={addingId === p.id}>
-                      +
+                    <Button onClick={() => addToCart(p.id)} disabled={addingId === p.id}>
+                      {addingId === p.id ? "Dodavanje..." : "Dodaj u korpu"}
                     </Button>
                   </div>
-
-                  <Button onClick={() => addToCart(p.id)} disabled={addingId === p.id}>
-                    {addingId === p.id ? "Dodavanje..." : "Dodaj u korpu"}
-                  </Button>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
