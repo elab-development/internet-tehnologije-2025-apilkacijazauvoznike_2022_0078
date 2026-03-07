@@ -10,6 +10,23 @@ services:
       - "5432:5432"
     volumes:
       - iteh_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d iteh_uvoznici"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: iteh_uvoznici_app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://app:app@db:5432/iteh_uvoznici
+      JWT_SECRET: iteh_uvoznici_dev_secret
 
 volumes:
   iteh_pg_data:

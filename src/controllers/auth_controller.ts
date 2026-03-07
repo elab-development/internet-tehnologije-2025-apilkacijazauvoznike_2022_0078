@@ -20,33 +20,50 @@ export async function getUserById(id: number) {
   return u ?? null;
 }
 
-// login
-export async function loginUser(input: { email: string; sifra: string }): Promise<Result<{
-  id: number;
-  imePrezime: string;
+// LOGIN
+export async function loginUser(input: {
   email: string;
-  uloga: Role;
-  status: boolean;
-}>> {
+  sifra: string;
+}): Promise<
+  Result<{
+    id: number;
+    imePrezime: string;
+    email: string;
+    uloga: Role;
+    status: boolean;
+  }>
+> {
   const email = input.email?.trim().toLowerCase();
   const sifra = input.sifra;
 
   if (!email || !sifra) {
-    return { ok: false, error: { code: "INVALID_INPUT", message: "Email i sifra su obavezni" } };
+    return {
+      ok: false,
+      error: { code: "INVALID_INPUT", message: "Email i sifra su obavezni" },
+    };
   }
 
   const u = await getUserByEmail(email);
   if (!u) {
-    return { ok: false, error: { code: "INVALID_CREDENTIALS", message: "Pogresan email ili sifra" } };
+    return {
+      ok: false,
+      error: { code: "INVALID_CREDENTIALS", message: "Pogresan email ili sifra" },
+    };
   }
 
   if (u.status === false) {
-    return { ok: false, error: { code: "USER_DISABLED", message: "Korisnik je deaktiviran" } };
+    return {
+      ok: false,
+      error: { code: "USER_DISABLED", message: "Korisnik je deaktiviran" },
+    };
   }
 
   const passOk = await bcrypt.compare(sifra, u.sifra);
   if (!passOk) {
-    return { ok: false, error: { code: "INVALID_CREDENTIALS", message: "Pogresan email ili sifra" } };
+    return {
+      ok: false,
+      error: { code: "INVALID_CREDENTIALS", message: "Pogresan email ili sifra" },
+    };
   }
 
   return {
@@ -61,35 +78,59 @@ export async function loginUser(input: { email: string; sifra: string }): Promis
   };
 }
 
-// register
+// REGISTER
 export async function registerUser(input: {
   imePrezime: string;
   email: string;
   sifra: string;
-  uloga?: Role;
-}): Promise<Result<{
-  id: number;
-  imePrezime: string;
-  email: string;
-  uloga: Role;
-  status: boolean;
-}>> {
+  uloga?: "UVOZNIK" | "DOBAVLJAC";
+}): Promise<
+  Result<{
+    id: number;
+    imePrezime: string;
+    email: string;
+    uloga: Role;
+    status: boolean;
+  }>
+> {
   const imePrezime = input.imePrezime?.trim();
   const email = input.email?.trim().toLowerCase();
   const sifra = input.sifra;
-  const uloga: Role = input.uloga ?? "UVOZNIK";
+  const uloga = input.uloga;
 
-  if (!imePrezime || !email || !sifra) {
-    return { ok: false, error: { code: "INVALID_INPUT", message: "Ime, email i sifra su obavezni" } };
+  if (!imePrezime || !email || !sifra || !uloga) {
+    return {
+      ok: false,
+      error: {
+        code: "INVALID_INPUT",
+        message: "Ime i prezime, email, sifra i uloga su obavezni",
+      },
+    };
+  }
+
+  if (uloga !== "UVOZNIK" && uloga !== "DOBAVLJAC") {
+    return {
+      ok: false,
+      error: {
+        code: "INVALID_ROLE",
+        message: "Dozvoljena je registracija samo za uvoznika i dobavljaca",
+      },
+    };
   }
 
   if (sifra.length < 6) {
-    return { ok: false, error: { code: "INVALID_INPUT", message: "Sifra mora imati bar 6 karaktera" } };
+    return {
+      ok: false,
+      error: { code: "INVALID_INPUT", message: "Sifra mora imati bar 6 karaktera" },
+    };
   }
 
   const exists = await getUserByEmail(email);
   if (exists) {
-    return { ok: false, error: { code: "EMAIL_EXISTS", message: "Email je vec registrovan" } };
+    return {
+      ok: false,
+      error: { code: "EMAIL_EXISTS", message: "Email je vec registrovan" },
+    };
   }
 
   const sifraHash = await bcrypt.hash(sifra, 10);

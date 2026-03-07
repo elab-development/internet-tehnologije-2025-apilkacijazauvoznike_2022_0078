@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Input from "@/src/components/Input";
 import Button from "@/src/components/Button";
@@ -8,7 +8,7 @@ import { homeByRole } from "@/src/lib/role_routes";
 
 type Me = { id: number; uloga: "ADMIN" | "UVOZNIK" | "DOBAVLJAC" };
 
-export default function NovaKategorijaPage() {
+function NovaKategorijaContent() {
   const router = useRouter();
   const sp = useSearchParams();
 
@@ -71,18 +71,18 @@ export default function NovaKategorijaPage() {
 
       const text = await res.text();
       let json: any = null;
-      try { json = JSON.parse(text); } catch {}
+      try {
+        json = JSON.parse(text);
+      } catch {}
 
       if (!res.ok || (json && json.ok === false)) {
         setError(json?.message ?? json?.error ?? text ?? "Neuspešno dodavanje kategorije.");
         return;
       }
 
-      // vrati nazad gde treba
       if (returnTo) router.push(returnTo);
       else if (me) router.push(homeByRole(me.uloga));
       else router.push("/");
-
     } catch {
       setError("Greška pri slanju (network).");
     }
@@ -113,5 +113,13 @@ export default function NovaKategorijaPage() {
         <Button type="submit">Sačuvaj</Button>
       </form>
     </div>
+  );
+}
+
+export default function NovaKategorijaPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Učitavanje...</div>}>
+      <NovaKategorijaContent />
+    </Suspense>
   );
 }

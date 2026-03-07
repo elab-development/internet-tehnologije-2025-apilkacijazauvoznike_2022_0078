@@ -7,9 +7,12 @@ export default function DobavljacLayout({ children }: { children: React.ReactNod
       <header className="border-b">
         <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
           <nav className="flex gap-4">
+            <Link href="/">Početna</Link>
             <Link href="/dobavljac/proizvod">Moji proizvodi</Link>
             <Link href="/dobavljac/proizvod/novi">Novi proizvod</Link>
+            <Link href="/dobavljac/istorija">Istorija porudžbina</Link>
             <Link href="/dobavljac/saradnje">Saradnje</Link>
+            <Link href="/dobavljac/analitika">Analitika</Link>
           </nav>
 
           <LogoutButton />
