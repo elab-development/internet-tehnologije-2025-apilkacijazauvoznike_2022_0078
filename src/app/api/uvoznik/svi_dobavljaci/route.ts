@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const user = await requireUser();
     requireRole(user, ["UVOZNIK"]);
-
+ 
     const res = await getSviDobavljaciBezSaradnje(user.id);
     return NextResponse.json(res.json, { status: res.status });
   } catch (err) {
