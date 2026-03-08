@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Input from "@/src/components/Input";
 import Button from "@/src/components/Button";
 import { homeByRole } from "@/src/lib/role_routes";
-import LogoutButton from "@/src/components/LogoutButton";
 
 type Me = { id: number; uloga: "ADMIN" | "UVOZNIK" | "DOBAVLJAC" };
 type Kategorija = { id: number; ime: string };
@@ -70,7 +69,9 @@ export default function IzmenaProizvodaPage() {
         const pText = await pRes.text();
 
         let pJson: any = null;
-        try { pJson = JSON.parse(pText); } catch { }
+        try {
+          pJson = JSON.parse(pText);
+        } catch {}
 
         if (!pRes.ok || (pJson && pJson.ok === false)) {
           setError(pJson?.message ?? pJson?.error ?? pText ?? "Ne mogu da učitam proizvod.");
@@ -78,8 +79,7 @@ export default function IzmenaProizvodaPage() {
           return;
         }
 
-        const proizvod: Proizvod =
-          pJson?.proizvod ?? pJson?.data ?? pJson;
+        const proizvod: Proizvod = pJson?.proizvod ?? pJson?.data ?? pJson;
 
         setSifra(proizvod.sifra ?? "");
         setNaziv(proizvod.naziv ?? "");
@@ -109,8 +109,14 @@ export default function IzmenaProizvodaPage() {
     setError("");
 
     if (
-      !sifra || !naziv || !slika ||
-      !sirina || !visina || !duzina || !cena || !idKategorija
+      !sifra ||
+      !naziv ||
+      !slika ||
+      !sirina ||
+      !visina ||
+      !duzina ||
+      !cena ||
+      !idKategorija
     ) {
       setError("Popuni sva polja.");
       return;
@@ -144,7 +150,9 @@ export default function IzmenaProizvodaPage() {
       console.log("PATCH /api/proizvodi/[id] status:", res.status, "body:", text);
 
       let json: any = null;
-      try { json = JSON.parse(text); } catch { }
+      try {
+        json = JSON.parse(text);
+      } catch {}
 
       if (!res.ok || (json && json.ok === false)) {
         setError(json?.message ?? json?.error ?? text ?? "Neuspešna izmena proizvoda.");
@@ -157,70 +165,104 @@ export default function IzmenaProizvodaPage() {
     }
   }
 
-  if (loading) return <div className="p-6">Učitavanje...</div>;
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+        Učitavanje...
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 max-w-xl space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Izmena proizvoda</h1>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => router.push("/dobavljac/proizvod")}
-          >
-            Nazad
-          </Button>
+    <div className="grid gap-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Dobavljač / Izmena proizvoda
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Izmena proizvoda
+            </h1>
+            <p className="max-w-3xl text-sm text-slate-600">
+              Ažuriranje podataka o postojećem proizvodu, uključujući šifru, naziv,
+              sliku, dimenzije, cenu i kategoriju.
+            </p>
+          </div>
 
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.push("/dobavljac/proizvod")}
+            >
+              Nazad
+            </Button>
+          </div>
         </div>
+      </section>
 
-      </div>
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        {error && (
+          <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <span className="font-semibold">Greška:</span> {error}
+          </div>
+        )}
 
-      {error && <div className="text-red-600">{error}</div>}
+        <form className="grid gap-5" onSubmit={handleSubmit}>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input label="Šifra" value={sifra} onChange={(e) => setSifra(e.target.value)} required />
+            <Input label="Naziv" value={naziv} onChange={(e) => setNaziv(e.target.value)} required />
+          </div>
 
-      <form className="space-y-3" onSubmit={handleSubmit}>
-        <Input label="Šifra" value={sifra} onChange={(e) => setSifra(e.target.value)} required />
-        <Input label="Naziv" value={naziv} onChange={(e) => setNaziv(e.target.value)} required />
-        <Input label="Slika (URL)" value={slika} onChange={(e) => setSlika(e.target.value)} required />
+          <Input
+            label="Slika (URL)"
+            value={slika}
+            onChange={(e) => setSlika(e.target.value)}
+            required
+          />
 
-        <div className="grid grid-cols-3 gap-3">
-          <Input label="Širina" value={sirina} onChange={(e) => setSirina(e.target.value)} required />
-          <Input label="Visina" value={visina} onChange={(e) => setVisina(e.target.value)} required />
-          <Input label="Dužina" value={duzina} onChange={(e) => setDuzina(e.target.value)} required />
-        </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Input label="Širina" value={sirina} onChange={(e) => setSirina(e.target.value)} required />
+            <Input label="Visina" value={visina} onChange={(e) => setVisina(e.target.value)} required />
+            <Input label="Dužina" value={duzina} onChange={(e) => setDuzina(e.target.value)} required />
+          </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Input label="Cena" value={cena} onChange={(e) => setCena(e.target.value)} required />
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input label="Cena" value={cena} onChange={(e) => setCena(e.target.value)} required />
 
-          {kategorije.length > 0 ? (
-            <div className="space-y-1">
-              <label className="text-sm">Kategorija</label>
-              <select
-                className="w-full border rounded p-2"
+            {kategorije.length > 0 ? (
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-slate-700">Kategorija</span>
+                <select
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+                  value={idKategorija}
+                  onChange={(e) => setIdKategorija(e.target.value)}
+                  required
+                >
+                  <option value="">-- izaberi --</option>
+                  {kategorije.map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.ime}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : (
+              <Input
+                label="ID kategorije"
                 value={idKategorija}
                 onChange={(e) => setIdKategorija(e.target.value)}
                 required
-              >
-                <option value="">-- izaberi --</option>
-                {kategorije.map((k) => (
-                  <option key={k.id} value={k.id}>
-                    {k.ime}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            <Input
-              label="ID kategorije"
-              value={idKategorija}
-              onChange={(e) => setIdKategorija(e.target.value)}
-              required
-            />
-          )}
-        </div>
+              />
+            )}
+          </div>
 
-        <Button type="submit">Sačuvaj izmene</Button>
-      </form>
+          <div className="pt-2">
+            <Button type="submit">Sačuvaj izmene</Button>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }

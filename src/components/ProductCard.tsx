@@ -25,8 +25,8 @@ export default function ProductCard({
 }) {
 
   return (
-    <div className="border rounded p-4 flex gap-4">
-      <img src={p.slika} alt={p.naziv} className="w-24 h-24 object-cover rounded border" />
+    <div className="border border-slate-200 rounded-2xl p-4 shadow-sm hover:border-slate-400 transition flex gap-4">
+      <img src={p.slika} alt={p.naziv} className="w-24 h-24 object-cover rounded-lg border border-slate-200" />
       <div className="flex-1">
         <div className="font-semibold">{p.naziv}</div>
         <div className="text-sm text-gray-600">Šifra: {p.sifra}</div>

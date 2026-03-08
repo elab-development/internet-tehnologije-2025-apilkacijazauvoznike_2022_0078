@@ -74,17 +74,31 @@ function UvoznikUporediContent() {
     const dJson: any = await safeJson(dRes);
     const kJson: any = await safeJson(kRes);
 
-    if (!dRes.ok || !dJson.ok) throw new Error(dJson.message ?? dJson.error ?? "Ne mogu da učitam dobavljače.");
-    if (!kRes.ok || !kJson.ok) throw new Error(kJson.message ?? kJson.error ?? "Ne mogu da učitam kategorije.");
+    if (!dRes.ok || !dJson.ok) {
+      throw new Error(dJson.message ?? dJson.error ?? "Ne mogu da učitam dobavljače.");
+    }
+    if (!kRes.ok || !kJson.ok) {
+      throw new Error(kJson.message ?? kJson.error ?? "Ne mogu da učitam kategorije.");
+    }
 
-    setDobavljaci((dJson.dobavljaci ?? []).map((x: any) => ({ idDobavljac: x.idDobavljac, imePrezime: x.imePrezime })));
+    setDobavljaci(
+      (dJson.dobavljaci ?? []).map((x: any) => ({
+        idDobavljac: x.idDobavljac,
+        imePrezime: x.imePrezime,
+      }))
+    );
     setKategorije((kJson.data ?? []).map((x: any) => ({ id: x.id, ime: x.ime })));
   }
 
   async function fetchProductById(id: number) {
-    const res = await fetch(`/api/uvoznik/proizvodi/${id}`, { credentials: "include", cache: "no-store" });
+    const res = await fetch(`/api/uvoznik/proizvodi/${id}`, {
+      credentials: "include",
+      cache: "no-store",
+    });
     const json: any = await safeJson(res);
-    if (!res.ok || !json.ok) throw new Error(json.message ?? json.error ?? "Ne mogu da učitam proizvod.");
+    if (!res.ok || !json.ok) {
+      throw new Error(json.message ?? json.error ?? "Ne mogu da učitam proizvod.");
+    }
     return json.proizvod as ProizvodRow;
   }
 
@@ -98,7 +112,9 @@ function UvoznikUporediContent() {
       cache: "no-store",
     });
     const json: any = await safeJson(res);
-    if (!res.ok || !json.ok) throw new Error(json.message ?? json.error ?? "Ne mogu da učitam listu proizvoda.");
+    if (!res.ok || !json.ok) {
+      throw new Error(json.message ?? json.error ?? "Ne mogu da učitam listu proizvoda.");
+    }
     return (json.proizvodi ?? []) as ProizvodRow[];
   }
 
@@ -189,20 +205,53 @@ function UvoznikUporediContent() {
 
   const canCompare = useMemo(() => Boolean(left && right), [left, right]);
 
-  if (loading) return <div style={{ padding: 16 }}>Učitavanje...</div>;
-  if (err) return <div style={{ padding: 16, color: "red" }}>{err}</div>;
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+        Učitavanje...
+      </div>
+    );
+  }
+
+  if (err) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">
+        {err}
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: 16, display: "grid", gap: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <h1>Uporedi proizvode</h1>
-        <Button onClick={() => router.push("/uvoznik/proizvodi")}>Nazad na proizvode</Button>
-      </div>
+    <div className="grid gap-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Uvoznik / Upoređivanje
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Uporedi proizvode
+            </h1>
+            <p className="max-w-3xl text-sm text-slate-600">
+              Izaberite dva proizvoda iz ponude aktivnih dobavljača i uporedite osnovne
+              karakteristike, cenu, kategoriju i dimenzije.
+            </p>
+          </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12, minHeight: 380 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-            <b>Proizvod A</b>
+          <Button onClick={() => router.push("/uvoznik/proizvodi")}>
+            Nazad na proizvode
+          </Button>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Proizvod A</h2>
+              <p className="text-sm text-slate-500">Leva strana poređenja</p>
+            </div>
+
             {left && (
               <Button variant="danger" onClick={clearLeft}>
                 X
@@ -211,17 +260,17 @@ function UvoznikUporediContent() {
           </div>
 
           {!left ? (
-            <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-              <div style={{ fontSize: 13, opacity: 0.85 }}>
-                Izaberi dobavljača i (opciono) kategoriju, pa proizvod.
+            <div className="mt-5 grid gap-4">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+                Izaberi dobavljača i opciono kategoriju, zatim učitaj listu proizvoda.
               </div>
 
-              <label style={{ display: "grid", gap: 4 }}>
-                Dobavljač (obavezno)
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                <span>Dobavljač (obavezno)</span>
                 <select
                   value={lDobId}
                   onChange={(e) => setLDobId(e.target.value === "" ? "" : Number(e.target.value))}
-                  style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                 >
                   <option value="">Izaberi...</option>
                   {dobavljaci.map((d) => (
@@ -232,12 +281,12 @@ function UvoznikUporediContent() {
                 </select>
               </label>
 
-              <label style={{ display: "grid", gap: 4 }}>
-                Kategorija (opciono)
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                <span>Kategorija (opciono)</span>
                 <select
                   value={lKatId}
                   onChange={(e) => setLKatId(e.target.value === "" ? "" : Number(e.target.value))}
-                  style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                 >
                   <option value="">Sve</option>
                   {kategorije.map((k) => (
@@ -262,12 +311,14 @@ function UvoznikUporediContent() {
 
               {lProizvodi.length > 0 && (
                 <>
-                  <label style={{ display: "grid", gap: 4 }}>
-                    Proizvod
+                  <label className="grid gap-2 text-sm font-medium text-slate-700">
+                    <span>Proizvod</span>
                     <select
                       value={lProizvodId}
-                      onChange={(e) => setLProizvodId(e.target.value === "" ? "" : Number(e.target.value))}
-                      style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+                      onChange={(e) =>
+                        setLProizvodId(e.target.value === "" ? "" : Number(e.target.value))
+                      }
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                     >
                       <option value="">Izaberi...</option>
                       {lProizvodi.map((p) => (
@@ -293,21 +344,51 @@ function UvoznikUporediContent() {
               )}
             </div>
           ) : (
-            <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-              <img src={left.slika} alt={left.naziv} style={{ width: "100%", maxHeight: 200, objectFit: "cover", borderRadius: 10, border: "1px solid #eee" }} />
-              <div><b>{left.naziv}</b></div>
-              <div>Šifra: {left.sifra}</div>
-              <div>Dobavljač: <b>{left.dobavljacIme ?? "-"}</b></div>
-              <div>Kategorija: <b>{left.kategorijaIme ?? "-"}</b></div>
-              <div>Dimenzije: {left.sirina} × {left.visina} × {left.duzina}</div>
-              <div style={{ fontSize: 16 }}><b>Cena: {left.cena}€</b></div>
+            <div className="mt-5 grid gap-4">
+              <img
+                src={left.slika}
+                alt={left.naziv}
+                className="h-56 w-full rounded-2xl border border-slate-200 object-cover"
+              />
+
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-slate-900">{left.naziv}</h3>
+                <div className="flex flex-wrap gap-2 text-sm">
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                    Šifra: <span className="font-semibold">{left.sifra}</span>
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                    Dobavljač: <span className="font-semibold">{left.dobavljacIme ?? "-"}</span>
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                    Kategorija: <span className="font-semibold">{left.kategorijaIme ?? "-"}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-2 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-500">Dimenzije</span>
+                  <span className="font-medium text-slate-900">
+                    {left.sirina} × {left.visina} × {left.duzina}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-500">Cena</span>
+                  <span className="text-base font-semibold text-slate-900">{left.cena}€</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
-        <div style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12, minHeight: 380 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-            <b>Proizvod B</b>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Proizvod B</h2>
+              <p className="text-sm text-slate-500">Desna strana poređenja</p>
+            </div>
+
             {right && (
               <Button variant="danger" onClick={clearRight}>
                 X
@@ -316,17 +397,17 @@ function UvoznikUporediContent() {
           </div>
 
           {!right ? (
-            <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-              <div style={{ fontSize: 13, opacity: 0.85 }}>
-                Izaberi dobavljača i (opciono) kategoriju, pa proizvod.
+            <div className="mt-5 grid gap-4">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+                Izaberi dobavljača i opciono kategoriju, zatim učitaj listu proizvoda.
               </div>
 
-              <label style={{ display: "grid", gap: 4 }}>
-                Dobavljač (obavezno)
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                <span>Dobavljač (obavezno)</span>
                 <select
                   value={rDobId}
                   onChange={(e) => setRDobId(e.target.value === "" ? "" : Number(e.target.value))}
-                  style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                 >
                   <option value="">Izaberi...</option>
                   {dobavljaci.map((d) => (
@@ -337,12 +418,12 @@ function UvoznikUporediContent() {
                 </select>
               </label>
 
-              <label style={{ display: "grid", gap: 4 }}>
-                Kategorija (opciono)
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                <span>Kategorija (opciono)</span>
                 <select
                   value={rKatId}
                   onChange={(e) => setRKatId(e.target.value === "" ? "" : Number(e.target.value))}
-                  style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                 >
                   <option value="">Sve</option>
                   {kategorije.map((k) => (
@@ -367,12 +448,14 @@ function UvoznikUporediContent() {
 
               {rProizvodi.length > 0 && (
                 <>
-                  <label style={{ display: "grid", gap: 4 }}>
-                    Proizvod
+                  <label className="grid gap-2 text-sm font-medium text-slate-700">
+                    <span>Proizvod</span>
                     <select
                       value={rProizvodId}
-                      onChange={(e) => setRProizvodId(e.target.value === "" ? "" : Number(e.target.value))}
-                      style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+                      onChange={(e) =>
+                        setRProizvodId(e.target.value === "" ? "" : Number(e.target.value))
+                      }
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
                     >
                       <option value="">Izaberi...</option>
                       {rProizvodi.map((p) => (
@@ -398,29 +481,69 @@ function UvoznikUporediContent() {
               )}
             </div>
           ) : (
-            <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-              <img src={right.slika} alt={right.naziv} style={{ width: "100%", maxHeight: 200, objectFit: "cover", borderRadius: 10, border: "1px solid #eee" }} />
-              <div><b>{right.naziv}</b></div>
-              <div>Šifra: {right.sifra}</div>
-              <div>Dobavljač: <b>{right.dobavljacIme ?? "-"}</b></div>
-              <div>Kategorija: <b>{right.kategorijaIme ?? "-"}</b></div>
-              <div>Dimenzije: {right.sirina} × {right.visina} × {right.duzina}</div>
-              <div style={{ fontSize: 16 }}><b>Cena: {right.cena}€</b></div>
+            <div className="mt-5 grid gap-4">
+              <img
+                src={right.slika}
+                alt={right.naziv}
+                className="h-56 w-full rounded-2xl border border-slate-200 object-cover"
+              />
+
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-slate-900">{right.naziv}</h3>
+                <div className="flex flex-wrap gap-2 text-sm">
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                    Šifra: <span className="font-semibold">{right.sifra}</span>
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                    Dobavljač: <span className="font-semibold">{right.dobavljacIme ?? "-"}</span>
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                    Kategorija: <span className="font-semibold">{right.kategorijaIme ?? "-"}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-2 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-500">Dimenzije</span>
+                  <span className="font-medium text-slate-900">
+                    {right.sirina} × {right.visina} × {right.duzina}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-500">Cena</span>
+                  <span className="text-base font-semibold text-slate-900">{right.cena}€</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
-      </div>
+      </section>
 
-      <div style={{ opacity: 0.85 }}>
-        {canCompare ? "✅ Izabrana su oba proizvoda – možete ih porediti." : "Izaberite oba proizvoda da biste uporedili."}
-      </div>
+      <section
+        className={`rounded-2xl border p-4 text-sm shadow-sm ${
+          canCompare
+            ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+            : "border-slate-200 bg-white text-slate-600"
+        }`}
+      >
+        {canCompare
+          ? "✅ Izabrana su oba proizvoda – možete ih porediti."
+          : "Izaberite oba proizvoda da biste uporedili."}
+      </section>
     </div>
   );
 }
 
 export default function UvoznikUporediPage() {
   return (
-    <Suspense fallback={<div style={{ padding: 16 }}>Učitavanje...</div>}>
+    <Suspense
+      fallback={
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+          Učitavanje...
+        </div>
+      }
+    >
       <UvoznikUporediContent />
     </Suspense>
   );

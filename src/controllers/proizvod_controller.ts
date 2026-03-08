@@ -1,6 +1,7 @@
 import { db } from "@/src/db";
 import { proizvod, kategorija, korisnik } from "@/src/db/schema";
 import { and,eq } from "drizzle-orm";
+import { sanitizeText } from "@/src/lib/sanitize";
 
 export type CreateProizvodInput = {
   sifra: string;
@@ -48,8 +49,8 @@ function validateCreateInput(body: any): { ok: true; data: CreateProizvodInput }
   return {
     ok: true,
     data: {
-      sifra: sifra.trim(),
-      naziv: naziv.trim(),
+      sifra: sanitizeText(sifra.trim()),
+      naziv: sanitizeText(naziv.trim()),
       slika: slika.trim(),
       sirina: nSirina,
       visina: nVisina,
@@ -133,6 +134,7 @@ function parseId(id: string) {
   return n;
 }
 
+//IDOR
 async function assertOwnership(userId: number, productId: number) {
   
   const rows = await db
@@ -171,14 +173,14 @@ export async function updateProizvod(userId: number, productId: string, body: an
     if (typeof body.sifra !== "string" || body.sifra.trim() === "") {
       return { status: 400, json: { ok: false, error: "sifra mora biti string" } };
     }
-    zaIzmenu.sifra = body.sifra.trim();
+    zaIzmenu.sifra = sanitizeText(body.sifra.trim());
   }
 
   if (body?.naziv !== undefined) {
     if (typeof body.naziv !== "string" || body.naziv.trim() === "") {
       return { status: 400, json: { ok: false, error: "naziv mora biti string" } };
     }
-    zaIzmenu.naziv = body.naziv.trim();
+    zaIzmenu.naziv = sanitizeText(body.naziv.trim());
   }
 
   if (body?.slika !== undefined) {

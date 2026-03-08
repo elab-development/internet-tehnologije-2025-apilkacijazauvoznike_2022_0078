@@ -175,82 +175,142 @@ export default function UvoznikSaradnjePage() {
   if (loading) return <div className="p-6">Učitavanje...</div>;
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Saradnje (Uvoznik)</h1>
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => router.push("/uvoznik/dobavljaci")}>
-            Nazad
-          </Button>
+  <div className="grid gap-6">
+    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-2">
+          <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+            Uvoznik / Saradnje
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            Saradnje
+          </h1>
+          <p className="max-w-3xl text-sm text-slate-600">
+            Upravljanje zahtevima za saradnju sa dobavljačima, pregled aktivnih
+            partnerstava i zahteva koji su trenutno na čekanju.
+          </p>
         </div>
       </div>
+    </section>
 
-      {error && <div className="text-red-600">{error}</div>}
+    {error && (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">
+        <span className="font-semibold">Greška:</span> {error}
+      </div>
+    )}
 
-      <div className="border rounded-2xl p-4">
-        <div className="font-semibold mb-3">Zatraži saradnju (novi dobavljači)</div>
-        {availableDobavljaci.length === 0 ? (
-          <div>Nema novih dobavljača za saradnju.</div>
-        ) : (
-          <div className="space-y-2">
-            {availableDobavljaci.map((d) => (
-              <div key={d.id} className="flex items-center justify-between border rounded p-3">
-                <div>
-                  <div className="font-medium">{d.imePrezime}</div>
-                  <div className="text-sm text-gray-600">{d.email}</div>
-                </div>
-                <Button onClick={() => requestSaradnja(d.id)}>Zatraži</Button>
-              </div>
-            ))}
-          </div>
-        )}
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-slate-900">
+          Zatraži saradnju
+        </h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Novi dobavljači sa kojima još nemate aktivnu saradnju.
+        </p>
       </div>
 
-      <div className="border rounded-2xl p-4">
-        <div className="font-semibold mb-3">Moji zahtevi (na čekanju)</div>
-        {pendingMine.length === 0 ? (
-          <div>Nema zahteva na čekanju.</div>
-        ) : (
-          <div className="space-y-2">
-            {pendingMine.map((s) => (
-              <div key={s.idSaradnja} className="flex items-center justify-between border rounded p-3">
-                <div>
-                  <div>
-                    <div className="font-medium">{s.dobavljacIme ?? "-"}</div>
-                    <div className="text-sm text-gray-600">{s.dobavljacEmail ?? "-"}</div>
-                  </div>
+      {availableDobavljaci.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
+          Nema novih dobavljača za saradnju.
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {availableDobavljaci.map((d) => (
+            <div
+              key={d.id}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white"
+            >
+              <div className="space-y-1">
+                <div className="text-base font-semibold text-slate-900">
+                  {d.imePrezime}
                 </div>
-                <Button variant="danger" onClick={() => cancelRequest(s.idSaradnja)}>
-                  Otkaži zahtev
-                </Button>
+                <div className="text-sm text-slate-600">{d.email}</div>
               </div>
-            ))}
-          </div>
-        )}
+
+              <Button onClick={() => requestSaradnja(d.id)}>Zatraži</Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-slate-900">
+          Moji zahtevi
+        </h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Zahtevi za saradnju koji su poslati i još čekaju odgovor.
+        </p>
       </div>
 
-      <div className="border rounded-2xl p-4">
-        <div className="font-semibold mb-3">Aktivne saradnje</div>
-        {activeMine.length === 0 ? (
-          <div>Nema aktivnih saradnji.</div>
-        ) : (
-          <div className="space-y-2">
-            {activeMine.map((s) => (
-              <div key={s.idSaradnja} className="flex items-center justify-between border rounded p-3">
-                <div>
-                  <div>
-                    <div className="font-medium">{s.dobavljacIme ?? "-"}</div>
-                    <div className="text-sm text-gray-600">{s.dobavljacEmail ?? "-"}</div>
-                  </div>
+      {pendingMine.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
+          Nema zahteva na čekanju.
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {pendingMine.map((s) => (
+            <div
+              key={s.idSaradnja}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+            >
+              <div className="space-y-1">
+                <div className="text-base font-semibold text-slate-900">
+                  {s.dobavljacIme ?? "-"}
                 </div>
-                <Button variant="danger" onClick={() => cancelActive(s.idSaradnja)}>
-                  Prekini saradnju
-                </Button>
+                <div className="text-sm text-slate-600">
+                  {s.dobavljacEmail ?? "-"}
+                </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              <Button variant="danger" onClick={() => cancelRequest(s.idSaradnja)}>
+                Otkaži zahtev
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-slate-900">
+          Aktivne saradnje
+        </h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Dobavljači sa kojima trenutno imate aktivan poslovni odnos.
+        </p>
       </div>
-    </div>
-  );
+
+      {activeMine.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
+          Nema aktivnih saradnji.
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {activeMine.map((s) => (
+            <div
+              key={s.idSaradnja}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4"
+            >
+              <div className="space-y-1">
+                <div className="text-base font-semibold text-slate-900">
+                  {s.dobavljacIme ?? "-"}
+                </div>
+                <div className="text-sm text-slate-600">
+                  {s.dobavljacEmail ?? "-"}
+                </div>
+              </div>
+
+              <Button variant="danger" onClick={() => cancelActive(s.idSaradnja)}>
+                Prekini saradnju
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  </div>
+);
 }

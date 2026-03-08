@@ -81,8 +81,8 @@ export default function UvoznikKontejnerPage() {
       if (!res.ok || !json?.ok) {
         setError(
           json?.message ||
-            json?.error ||
-            "Greška (moguće da se server kompajlira / ruta pukla). Probajte refresh."
+          json?.error ||
+          "Greška (moguće da se server kompajlira / ruta pukla). Probajte refresh."
         );
         setLoading(false);
         return;
@@ -249,40 +249,68 @@ export default function UvoznikKontejnerPage() {
   if (error) return <div style={{ padding: 16, color: "red" }}>{error}</div>;
 
   return (
-    <div style={{ padding: 16, display: "grid", gap: 12 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>Moji kontejneri (korpa)</h1>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Button onClick={load}>Osveži</Button>
-          <Button onClick={() => router.push("/uvoznik/checkout")}>Nastavi na pregled</Button>
+    <div className="grid gap-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Uvoznik / Korpa
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Moji kontejneri
+            </h1>
+            <p className="max-w-3xl text-sm text-slate-600">
+              Pregled kontejnera grupisanih po dobavljaču, sa stavkama, statusima i
+              kontrolama za upravljanje korpom.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={load}>Osveži</Button>
+            <Button onClick={() => router.push("/uvoznik/checkout")}>
+              Nastavi na pregled
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
 
       {grouped.length === 0 ? (
-        <div>Korpa je prazna (nema kontejnera sa stavkama).</div>
+        <section className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-800">Korpa je prazna</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Trenutno nema kontejnera sa stavkama.
+          </p>
+        </section>
       ) : (
-        <div style={{ display: "grid", gap: 16 }}>
+        <div className="grid gap-5">
           {grouped.map((g) => {
-            const sumaRobe = g.kontejneri.reduce((acc, k) => acc + Number(k.ukupnaCenaKontejnera ?? 0), 0);
+            const sumaRobe = g.kontejneri.reduce(
+              (acc, k) => acc + Number(k.ukupnaCenaKontejnera ?? 0),
+              0
+            );
 
             return (
-              <div key={g.dobavljacIme} style={{ border: "1px solid #ccc", borderRadius: 12, padding: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-                  <div>
-                    <div style={{ fontSize: 16 }}>
-                      <b>Dobavljač:</b> {g.dobavljacIme}
+              <section
+                key={g.dobavljacIme}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4">
+                  <div className="space-y-2">
+                    <div className="text-lg font-semibold text-slate-900">
+                      Dobavljač: {g.dobavljacIme}
                     </div>
-                    <div style={{ fontSize: 13, opacity: 0.85 }}>
-                      Kontejnera: <b>{g.kontejneri.length}</b> • Roba ukupno: <b>{sumaRobe.toFixed(2)} €</b>
+                    <div className="text-sm text-slate-600">
+                      Kontejnera: <span className="font-semibold">{g.kontejneri.length}</span> •
+                      Roba ukupno: <span className="font-semibold"> {sumaRobe.toFixed(2)} €</span>
                     </div>
                   </div>
 
-                  <div style={{ fontSize: 12, opacity: 0.7, alignSelf: "center" }}>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-500">
                     Kontejneri su grupisani po dobavljaču radi preglednosti.
                   </div>
                 </div>
 
-                <div style={{ marginTop: 12, display: "grid", gap: 12 }}>
+                <div className="mt-4 grid gap-4">
                   {g.kontejneri.map((k) => {
                     const fill = ((k.trenutnaZapremina ?? 0) / (k.maxZapremina * 0.9)) * 100;
                     const isOpen = !!openBox[k.idKontejner];
@@ -291,43 +319,73 @@ export default function UvoznikKontejnerPage() {
                     const displayNo = displayNoInGroupById[k.idKontejner] ?? k.idKontejner;
 
                     return (
-                      <div key={k.idKontejner} style={{ border: "1px solid #ddd", padding: 12, borderRadius: 10 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-                          <div>
-                            <div>
-                              <b>Kontejner {displayNo}</b> — <b>{k.status}</b>
+                      <article
+                        key={k.idKontejner}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-4">
+                          <div className="space-y-2">
+                            <div className="text-base font-semibold text-slate-900">
+                              Kontejner {displayNo} — {k.status}
                             </div>
-                            <div style={{ fontSize: 13, opacity: 0.85 }}>
-                              Popunjenost: <b>{Number.isFinite(fill) ? fill.toFixed(2) : "0.00"}%</b> • Ukupno:{" "}
-                              <b>{(k.ukupnaCenaKontejnera ?? 0).toFixed(2)} €</b>
+                            <div className="text-sm text-slate-600">
+                              Popunjenost:{" "}
+                              <span className="font-semibold">
+                                {Number.isFinite(fill) ? fill.toFixed(2) : "0.00"}%
+                              </span>{" "}
+                              • Ukupno:{" "}
+                              <span className="font-semibold">
+                                {(k.ukupnaCenaKontejnera ?? 0).toFixed(2)} €
+                              </span>
+                            </div>
+
+                            <div className="h-2 w-full max-w-sm overflow-hidden rounded-full bg-slate-200">
+                              <div
+                                className="h-full rounded-full bg-slate-700"
+                                style={{ width: `${Math.max(0, Math.min(fill, 100))}%` }}
+                              />
                             </div>
                           </div>
 
-                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                          <div className="flex flex-wrap justify-end gap-2">
                             {k.status === "CLOSED" && (
-                              <Button onClick={() => onReopen(k.idKontejner)} disabled={busyK === k.idKontejner}>
+                              <Button
+                                onClick={() => onReopen(k.idKontejner)}
+                                disabled={busyK === k.idKontejner}
+                              >
                                 REOPEN
                               </Button>
                             )}
 
                             {k.status === "REOPEN" && (
-                              <Button onClick={() => onCloseReopen(k.idKontejner)} disabled={busyK === k.idKontejner}>
+                              <Button
+                                onClick={() => onCloseReopen(k.idKontejner)}
+                                disabled={busyK === k.idKontejner}
+                              >
                                 Zatvori REOPEN
                               </Button>
                             )}
 
                             {k.status === "PAUSED" && (
-                              <div style={{ fontSize: 12, opacity: 0.75, padding: "6px 8px" }}>
+                              <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500">
                                 Pauziran (čeka povratak u OPEN)
                               </div>
                             )}
 
-                            <Button onClick={() => onDeleteKontejner(k.idKontejner)} disabled={busyK === k.idKontejner}>
+                            <Button
+                              onClick={() => onDeleteKontejner(k.idKontejner)}
+                              disabled={busyK === k.idKontejner}
+                            >
                               Obriši
                             </Button>
 
                             <Button
-                              onClick={() => setOpenBox((prev) => ({ ...prev, [k.idKontejner]: !prev[k.idKontejner] }))}
+                              onClick={() =>
+                                setOpenBox((prev) => ({
+                                  ...prev,
+                                  [k.idKontejner]: !prev[k.idKontejner],
+                                }))
+                              }
                             >
                               {isOpen ? "Sakrij" : "Prikaži"} stavke
                             </Button>
@@ -335,34 +393,44 @@ export default function UvoznikKontejnerPage() {
                         </div>
 
                         {isOpen && (
-                          <div style={{ marginTop: 12, display: "grid", gap: 10 }}>
+                          <div className="mt-4 grid gap-3">
                             {k.stavke.length === 0 ? (
-                              <div>Nema stavki.</div>
+                              <div className="rounded-xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-600">
+                                Nema stavki.
+                              </div>
                             ) : (
                               k.stavke.map((s) => (
-                                <div key={s.rb} style={{ border: "1px solid #eee", padding: 12, borderRadius: 8 }}>
-                                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                                <div
+                                  key={s.rb}
+                                  className="rounded-2xl border border-slate-200 bg-white p-4"
+                                >
+                                  <div className="flex flex-wrap items-center gap-4">
                                     <img
                                       src={s.slika}
                                       alt={s.naziv}
                                       width={60}
                                       height={60}
-                                      style={{ objectFit: "cover", borderRadius: 6 }}
+                                      style={{ objectFit: "cover", borderRadius: 8 }}
                                     />
 
-                                    <div style={{ flex: 1 }}>
-                                      <div>
-                                        <b>{s.naziv}</b>
+                                    <div className="min-w-[220px] flex-1 space-y-1">
+                                      <div className="text-base font-semibold text-slate-900">
+                                        {s.naziv}
                                       </div>
-                                      <div style={{ fontSize: 12, opacity: 0.8 }}>
-                                        Dobavljač: {s.dobavljacIme ?? "-"} | Kategorija: {s.kategorijaIme ?? "-"}
+                                      <div className="text-sm text-slate-600">
+                                        Dobavljač: {s.dobavljacIme ?? "-"} • Kategorija:{" "}
+                                        {s.kategorijaIme ?? "-"}
                                       </div>
-                                      <div>Cena: {s.cena} €</div>
-                                      <div>Iznos stavke: {s.iznosStavke} €</div>
+                                      <div className="text-sm text-slate-600">
+                                        Cena: {s.cena} € • Iznos stavke:{" "}
+                                        <span className="font-semibold text-slate-900">
+                                          {s.iznosStavke} €
+                                        </span>
+                                      </div>
                                     </div>
 
-                                    <div style={{ display: "grid", gap: 6, justifyItems: "center" }}>
-                                      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                    <div className="grid gap-2 justify-items-center">
+                                      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2 py-2">
                                         <Button
                                           onClick={() => changeQty(s.rb, -1)}
                                           disabled={busyRb === s.rb}
@@ -370,7 +438,7 @@ export default function UvoznikKontejnerPage() {
                                         >
                                           -
                                         </Button>
-                                        <b style={{ minWidth: 24, textAlign: "center" }}>{s.kolicina}</b>
+                                        <b className="min-w-[24px] text-center">{s.kolicina}</b>
                                         <Button
                                           onClick={() => changeQty(s.rb, 1)}
                                           disabled={busyRb === s.rb}
@@ -381,12 +449,12 @@ export default function UvoznikKontejnerPage() {
                                       </div>
 
                                       {!editable && (
-                                        <div style={{ fontSize: 11, opacity: 0.7 }}>
+                                        <div className="text-center text-[11px] text-slate-500">
                                           {k.status === "CLOSED"
                                             ? "Zatvoren kontejner"
                                             : k.status === "PAUSED"
-                                            ? "Pauziran kontejner"
-                                            : "Neizmenjivo"}
+                                              ? "Pauziran kontejner"
+                                              : "Neizmenjivo"}
                                         </div>
                                       )}
                                     </div>
@@ -396,11 +464,11 @@ export default function UvoznikKontejnerPage() {
                             )}
                           </div>
                         )}
-                      </div>
+                      </article>
                     );
                   })}
                 </div>
-              </div>
+              </section>
             );
           })}
         </div>

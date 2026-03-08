@@ -32,7 +32,7 @@ type Group = {
   idDobavljac: number | null;
   dobavljacIme: string;
   kontejneri: PreviewKontejner[];
-  sumaKontejnera: number; 
+  sumaKontejnera: number;
 };
 
 async function safeJson(res: Response) {
@@ -147,7 +147,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ idSaradnja }), 
+        body: JSON.stringify({ idSaradnja }),
       });
 
       const json: any = await safeJson(res);
@@ -169,77 +169,88 @@ export default function CheckoutPage() {
   if (error) return <div style={{ padding: 16, color: "red" }}>{error}</div>;
 
   return (
-    <div style={{ padding: 16, display: "grid", gap: 12 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-        <h1>Pregled porudžbine</h1>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Button onClick={() => router.push("/uvoznik/kontejner")}>Nazad u korpu</Button>
-          <Button onClick={load}>Osveži</Button>
+    <div className="grid gap-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Uvoznik / Checkout
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Pregled porudžbine
+            </h1>
+            <p className="max-w-3xl text-sm text-slate-600">
+              Završni pregled porudžbine po dobavljačima, kontejnerima i stavkama,
+              sa obračunom troškova robe, kontejnera i carine.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => router.push("/uvoznik/kontejner")}>
+              Nazad u korpu
+            </Button>
+            <Button onClick={load}>Osveži</Button>
+          </div>
         </div>
-      </div>
+      </section>
 
       {computedByGroup.length === 0 ? (
-        <div>Korpa je prazna.</div>
+        <section className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-800">Korpa je prazna</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Nema stavki za pregled porudžbine.
+          </p>
+        </section>
       ) : (
-        <div style={{ display: "grid", gap: 12 }}>
+        <div className="grid gap-5">
           {computedByGroup.map((g) => {
             const expanded = Boolean(expandedBySaradnja[g.idSaradnja]);
             const busy = Boolean(busyPayBySaradnja[g.idSaradnja]);
 
             return (
-              <div key={g.idSaradnja} style={{ border: "1px solid #ddd", padding: 12, borderRadius: 10 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <div>
-                    <div>
-                      <b>Dobavljač:</b> {g.dobavljacIme}{" "}
-                      <span style={{ fontSize: 12, opacity: 0.7 }}>(saradnja #{g.idSaradnja})</span>
+              <section
+                key={g.idSaradnja}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="text-lg font-semibold text-slate-900">
+                      Dobavljač: {g.dobavljacIme}
+                      <span className="ml-2 text-xs font-normal text-slate-500">
+                        (saradnja #{g.idSaradnja})
+                      </span>
                     </div>
-                    <div style={{ fontSize: 13, opacity: 0.85 }}>
-                      Kontejnera: <b>{g.brojKontejnera}</b> • Roba ukupno: <b>{g.roba.toFixed(2)} €</b>
+                    <div className="text-sm text-slate-600">
+                      Kontejnera: <span className="font-semibold">{g.brojKontejnera}</span> •
+                      Roba ukupno: <span className="font-semibold"> {g.roba.toFixed(2)} €</span>
                     </div>
                   </div>
 
-                  {/* Checkout breakdown */}
-                  <div style={{ minWidth: 300, border: "1px solid #eee", borderRadius: 10, padding: 10 }}>
-                    <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                  <div className="min-w-[300px] rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="grid gap-3 text-sm text-slate-700">
+                      <div className="flex justify-between gap-3">
                         <span>Roba</span>
                         <b>{g.roba.toFixed(2)} €</b>
                       </div>
 
-                      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                      <div className="flex justify-between gap-3">
                         <span>
                           Kontejneri ({g.brojKontejnera} × {CENA_KONTEJNERA} €)
                         </span>
                         <b>{g.kontejneriFee.toFixed(2)} €</b>
                       </div>
 
-                      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                      <div className="flex justify-between gap-3">
                         <span>Carina (10% od robe)</span>
                         <b>{g.carina.toFixed(2)} €</b>
                       </div>
 
-                      <div
-                        style={{
-                          borderTop: "1px solid #eee",
-                          paddingTop: 6,
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <span>Ukupno za dobavljača</span>
+                      <div className="flex justify-between gap-3 border-t border-slate-200 pt-3">
+                        <span className="font-medium">Ukupno za dobavljača</span>
                         <b>{g.ukupno.toFixed(2)} €</b>
                       </div>
 
-                      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 6, flexWrap: "wrap" }}>
+                      <div className="mt-2 flex flex-wrap justify-end gap-2">
                         <Button onClick={() => toggleExpanded(g.idSaradnja)}>
                           {expanded ? "Sakrij kontejnere" : "Prikaži kontejnere"}
                         </Button>
@@ -252,71 +263,64 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* ✅ Kontejneri i stavke su skupljeni dok korisnik ne klikne */}
                 {expanded && (
-                  <div style={{ marginTop: 12, display: "grid", gap: 10 }}>
+                  <div className="mt-4 grid gap-3">
                     {g.kontejneri.map((k) => (
-                      <div key={k.idKontejner} style={{ border: "1px solid #eee", padding: 12, borderRadius: 8 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-                          <div>
+                      <article
+                        key={k.idKontejner}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-4">
+                          <div className="text-sm text-slate-700">
                             <b>Kontejner #{k.idKontejner}</b> — status: <b>{k.status}</b>
                           </div>
-                          <div>
-                            Roba u kontejneru: <b>{Number(k.ukupnaCenaKontejnera || 0).toFixed(2)} €</b>
+                          <div className="text-sm text-slate-700">
+                            Roba u kontejneru:{" "}
+                            <b>{Number(k.ukupnaCenaKontejnera || 0).toFixed(2)} €</b>
                           </div>
                         </div>
 
-                        <div style={{ marginTop: 10, display: "grid", gap: 8 }}>
+                        <div className="mt-4 grid gap-3">
                           {k.stavke.map((s) => (
-                            <div key={s.rb} style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                            <div
+                              key={s.rb}
+                              className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4"
+                            >
                               <img
                                 src={s.slika}
                                 alt={s.naziv}
                                 width={48}
                                 height={48}
-                                style={{ objectFit: "cover", borderRadius: 6 }}
+                                style={{ objectFit: "cover", borderRadius: 8 }}
                               />
-                              <div style={{ flex: 1 }}>
-                                <div>
-                                  <b>{s.naziv}</b>
-                                </div>
-                                <div style={{ fontSize: 12, opacity: 0.85 }}>
+                              <div className="min-w-[220px] flex-1">
+                                <div className="font-semibold text-slate-900">{s.naziv}</div>
+                                <div className="text-sm text-slate-600">
                                   Količina: <b>{s.kolicina}</b> • Cena: {Number(s.cena).toFixed(2)} €
                                 </div>
                               </div>
-                              <div>
-                                <b>{Number(s.iznosStavke).toFixed(2)} €</b>
+                              <div className="text-sm font-semibold text-slate-900">
+                                {Number(s.iznosStavke).toFixed(2)} €
                               </div>
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </article>
                     ))}
                   </div>
                 )}
-              </div>
+              </section>
             );
           })}
 
-          {/* Samo prikaz total-a, bez globalnog plaćanja */}
-          <div
-            style={{
-              borderTop: "1px solid #eee",
-              paddingTop: 12,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 12,
-              flexWrap: "wrap",
-            }}
-          >
-            <div style={{ fontSize: 16 }}>
-              Grand total (sve grupe): <b>{grandTotal.toFixed(2)} €</b>
+          <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="text-lg font-semibold text-slate-900">
+              Grand total (sve grupe): {grandTotal.toFixed(2)} €
             </div>
-            <div style={{ fontSize: 12, opacity: 0.75 }}>
+            <div className="text-sm text-slate-500">
               Plaćanje se radi po dobavljaču (svaka faktura posebno).
             </div>
-          </div>
+          </section>
         </div>
       )}
     </div>
