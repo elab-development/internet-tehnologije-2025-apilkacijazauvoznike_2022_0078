@@ -1,36 +1,185 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aplikacija za upravljanje uvozom
 
-## Getting Started
+Web aplikacija za upravljanje procesom uvoza robe iz inostranstva.  
+Projekat je razvijen u okviru predmeta **Internet tehnologije**.
 
-First, run the development server:
+Aplikacija omogućava saradnju između **uvoznika i dobavljača**, upravljanje proizvodima, kreiranje kontejnera za transport robe, generisanje faktura i analizu prodaje.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Repozitorijum:  
+https://github.com/elab-development/internet-tehnologije-2025-apilkacijazauvoznike_2022_0078
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Tehnologije
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Aplikacija je razvijena korišćenjem sledećih tehnologija:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Frontend i Backend
+- Next.js
+- React
+- TypeScript
 
-## Learn More
+Baza podataka
+- PostgreSQL
+- Drizzle ORM
 
-To learn more about Next.js, take a look at the following resources:
+DevOps
+- Docker
+- Docker Compose
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+U projektu je obezbeđena API specifikacija (**Swagger**) i integrisana su dva eksterna API-a (**Google Charts, Frankfurter**).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Arhitektura aplikacije
 
-## Deploy on Vercel
+Aplikacija koristi **Next.js full stack arhitekturu**.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Struktura backend logike:
+API Route → Controller → Baza podataka
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- API rute primaju HTTP zahteve
+- kontroleri implementiraju poslovnu logiku
+- Drizzle ORM komunicira sa PostgreSQL bazom
+
+Autentifikacija je implementirana pomoću **JWT tokena i HTTP-only cookies**.
+
+# Korisničke uloge
+
+Sistem podržava tri tipa korisnika:
+
+### Admin
+- upravljanje korisnicima
+- kontrola sistema
+
+### Uvoznik
+- upravljanje saradnjama
+- pregled proizvoda dobavljača sa kojima sarađuje
+- poređenje ponuda dobavljača
+- kreiranje i upravljanje kontejnerima
+- dodavanje proizvoda u kontejner
+- checkout i generisanje faktura
+- analitika kupovine
+
+### Dobavljač
+- upravljanje saradnjama
+- upravljanje kategorijama proizvoda
+- upravljanje proizvodima
+- pregled analitike prodaje
+
+# Glavne funkcionalnosti
+
+Aplikacija omogućava:
+
+Autentifikaciju korisnika
+- registracija
+- login
+- logout
+
+Upravljanje proizvodima
+- dodavanje proizvoda
+- izmena proizvoda
+- brisanje proizvoda
+- pregled proizvoda
+- poređenje proizvoda
+
+Upravljanje kategorijama
+- dodavanje kategorija
+- izmena kategorija
+- brisanje kategorija
+
+Saradnje između uvoznika i dobavljača
+- uspostavljanje saradnje
+- otkazivanje saradnje
+- ograničavanje pregleda proizvoda samo na dobavljače sa kojima postoji saradnja
+
+Kontejner sistem
+- dodavanje proizvoda u kontejner
+- automatsko računanje zapremine
+- raspodela proizvoda po kontejnerima
+- obračun cene kontejnera
+
+Checkout proces
+- obračun carine
+- obračun ukupnih troškova uvoza
+- generisanje faktura
+
+Analitika za uvoznika
+- analiza kupovine po mesecima
+- analiza potrošnje po dobavljačima
+- analiza najčešće kupljenih proizvoda
+
+Analitika za dobavljača
+- prodaja po mesecima
+- najprodavaniji proizvodi
+- prihod po proizvodima
+
+# Eksterni API servisi
+
+Aplikacija koristi dva eksterna API servisa:
+
+### Frankfurter API
+Koristi se za konverziju valuta prilikom prikaza cena proizvoda.
+
+https://www.frankfurter.app
+
+### Google Charts
+Koristi se za vizualizaciju statističkih podataka i analitike.
+
+https://developers.google.com/chart
+
+# Vizualizacija podataka
+
+Aplikacija koristi **Google Charts** za grafički prikaz podataka.
+
+Implementirani grafici:
+
+- kupovina po mesecima
+- potrošnja po dobavljačima
+- najčešće kupljeni proizvodi
+- prodaja dobavljača po mesecima
+- najprodavaniji proizvodi dobavljača
+- prihod po proizvodima
+
+# Pokretanje aplikacije
+
+## Pokretanje pomoću Docker-a
+
+Najjednostavniji način pokretanja aplikacije je pomoću Docker-a.
+
+Pokrenuti sledeću komandu u root folderu projekta:
+docker compose up --build
+
+Ova komanda pokreće:
+
+- PostgreSQL bazu
+- aplikacioni server
+
+## Environment promenljive
+
+Potrebno je kreirati `.env` fajl u root folderu projekta na osnovu `.env.example` fajla.
+
+# API dokumentacija
+
+API dokumentacija je dostupna putem **Swagger** alata.
+
+Swagger omogućava:
+
+- pregled API ruta
+- testiranje API zahteva
+- pregled strukture request i response objekata
+
+# Git grane
+
+Projekat koristi sledeću strategiju grana:
+
+- **main** – stabilna verzija aplikacije
+- **develop** – integraciona grana
+- **feature/ ili feat/** – grane za razvoj novih funkcionalnosti
+
+# Autori
+
+Studenti:
+
+- Ognjen Lekovski
+- Petar Lović
+- Aleksej Stojanović
+
+Fakultet organizacionih nauka  
+Predmet: Internet tehnologije
