@@ -172,7 +172,7 @@ export default function DobavljacAnalitikaPage() {
                 <h1>Analitika dobavljača</h1>
 
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <Button onClick={() => router.push("/dobavljac/proizvodi")}>
+                    <Button onClick={() => router.push("/dobavljac/proizvod")}>
                         Proizvodi
                     </Button>
                     <Button onClick={() => load()}>Osveži analitiku</Button>

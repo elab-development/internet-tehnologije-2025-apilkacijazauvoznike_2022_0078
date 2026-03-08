@@ -70,65 +70,117 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="p-6 max-w-md space-y-4">
-      <h1 className="text-xl font-semibold">Registracija</h1>
+    <div className="min-h-[calc(100vh-120px)] bg-slate-50 px-4 py-10">
+      <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.1fr_520px] lg:items-center">
+        <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="space-y-4">
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              BizSupply platforma
+            </div>
 
-      {error && <div className="text-red-600">{error}</div>}
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+              Kreiranje naloga
+            </h1>
 
-      <form className="space-y-3" onSubmit={handleSubmit}>
-        <Input
-          label="Ime i prezime"
-          value={imePrezime}
-          onChange={(e) => setImePrezime(e.target.value)}
-          required
-        />
+            <p className="max-w-xl text-sm leading-6 text-slate-600">
+              Otvorite nalog na platformi i pristupite sistemu za upravljanje
+              saradnjama, ponudama proizvoda, kontejnerima i poslovnom analitikom.
+            </p>
+          </div>
 
-        <Input
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="text-sm font-semibold text-slate-900">Za uvoznike</div>
+              <div className="mt-1 text-sm text-slate-600">
+                Pregled dobavljača, kupovina robe i rad sa kontejnerima.
+              </div>
+            </div>
 
-        <Input
-          label="Sifra"
-          type="password"
-          value={sifra}
-          onChange={(e) => setSifra(e.target.value)}
-          required
-        />
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="text-sm font-semibold text-slate-900">Za dobavljače</div>
+              <div className="mt-1 text-sm text-slate-600">
+                Upravljanje ponudom, proizvodima i poslovnim saradnjama.
+              </div>
+            </div>
+          </div>
+        </section>
 
-        <Input
-          label="Potvrda sifre"
-          type="password"
-          value={potvrdaSifre}
-          onChange={(e) => setPotvrdaSifre(e.target.value)}
-          required
-        />
+        <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-6 space-y-2">
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Registracija
+            </h2>
+            <p className="text-sm text-slate-500">
+              Popunite podatke za kreiranje novog korisničkog naloga.
+            </p>
+          </div>
 
-        <label className="block space-y-1">
-          <span className="text-sm">Uloga</span>
-          <select
-            className="w-full border rounded px-3 py-2 text-sm"
-            value={uloga}
-            onChange={(e) => setUloga(e.target.value as PublicRole)}
-          >
-            <option value="UVOZNIK">Uvoznik</option>
-            <option value="DOBAVLJAC">Dobavljac</option>
-          </select>
-        </label>
+          {error && (
+            <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              <span className="font-semibold">Greška:</span> {error}
+            </div>
+          )}
 
-        <div className="flex gap-3">
-          <Button type="submit" disabled={loading}>
-            {loading ? "Registracija..." : "Registruj se"}
-          </Button>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <Input
+              label="Ime i prezime"
+              value={imePrezime}
+              onChange={(e) => setImePrezime(e.target.value)}
+              required
+            />
 
-          <Button type="button" variant="secondary" onClick={() => router.push("/")}>
-            Nazad
-          </Button>
-        </div>
-      </form>
+            <Input
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+
+            <Input
+              label="Sifra"
+              type="password"
+              value={sifra}
+              onChange={(e) => setSifra(e.target.value)}
+              required
+            />
+
+            <Input
+              label="Potvrda sifre"
+              type="password"
+              value={potvrdaSifre}
+              onChange={(e) => setPotvrdaSifre(e.target.value)}
+              required
+            />
+
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">Uloga</span>
+              <select
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+                value={uloga}
+                onChange={(e) => setUloga(e.target.value as PublicRole)}
+              >
+                <option value="UVOZNIK">Uvoznik</option>
+                <option value="DOBAVLJAC">Dobavljac</option>
+              </select>
+            </label>
+
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button type="submit" disabled={loading}>
+                {loading ? "Registracija..." : "Registruj se"}
+              </Button>
+
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => router.push("/")}
+              >
+                Nazad
+              </Button>
+            </div>
+          </form>
+        </section>
+      </div>
     </div>
   );
 }

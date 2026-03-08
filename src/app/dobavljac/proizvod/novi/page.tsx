@@ -134,7 +134,7 @@ export default function NoviProizvodPage() {
           <Button
   type="button"
   variant="secondary"
-  onClick={() => router.push(`/kategorije/nova?returnTo=${encodeURIComponent("/dobavljac/proizvod/novi")}`)}
+  onClick={() => router.push(`/dobavljac/kategorije/nova?returnTo=${encodeURIComponent("/dobavljac/proizvod/novi")}`)}
 >
   + Nova kategorija
 </Button>

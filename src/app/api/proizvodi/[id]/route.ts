@@ -4,6 +4,7 @@ import { requireRole, requireUser } from "@/src/lib/auth_guard";
 
 export async function PATCH(req: Request, context: any) {
   try {
+    // IDOR
     const user = await requireUser();
     requireRole(user, ["DOBAVLJAC"]);
 

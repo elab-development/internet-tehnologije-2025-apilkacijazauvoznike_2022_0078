@@ -187,149 +187,161 @@ export default function OrderHistoryClient() {
   if (error) return <div style={{ padding: 16, color: "red" }}>{error}</div>;
 
   return (
-    <div style={{ padding: 16, display: "grid", gap: 12 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-          flexWrap: "wrap",
-        }}
-      >
-        <h1>Istorija porudžbina</h1>
-
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
-          <div style={{ display: "grid", gap: 4 }}>
-            <label style={{ fontSize: 12, opacity: 0.8 }}>Partner</label>
-            <select
-              value={partnerId}
-              onChange={(e) => setPartnerId(e.target.value)}
-              style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd", minWidth: 220 }}
-            >
-              <option value="">Svi</option>
-              {partners.map((p) => (
-                <option key={p.id} value={String(p.id)}>
-                  {p.ime} (#{p.id})
-                </option>
-              ))}
-            </select>
+    <div className="grid gap-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Uvoznik / Istorija
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Istorija porudžbina
+            </h1>
+            <p className="max-w-3xl text-sm text-slate-600">
+              Pregled završenih porudžbina sa filtriranjem po partneru i smeru sortiranja.
+            </p>
           </div>
 
-          <Button onClick={applyFilters}>Primeni</Button>
-          <Button onClick={clearFilters}>Reset</Button>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="grid gap-2">
+              <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Partner
+              </label>
+              <select
+                value={partnerId}
+                onChange={(e) => setPartnerId(e.target.value)}
+                className="min-w-[220px] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+              >
+                <option value="">Svi</option>
+                {partners.map((p) => (
+                  <option key={p.id} value={String(p.id)}>
+                    {p.ime} (#{p.id})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <Button onClick={toggleSort}>
-            {sortDir === "DESC" ? "Najnovije → Najstarije" : "Najstarije → Najnovije"}
-          </Button>
+            <Button onClick={applyFilters}>Primeni</Button>
+            <Button onClick={clearFilters}>Reset</Button>
+
+            <Button onClick={toggleSort}>
+              {sortDir === "DESC" ? "Najnovije → Najstarije" : "Najstarije → Najnovije"}
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
 
       {faktureSorted.length === 0 ? (
-        <div>Nema završenih porudžbina za izabrane filtere.</div>
+        <section className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-800">
+            Nema završenih porudžbina
+          </h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Nema rezultata za izabrane filtere.
+          </p>
+        </section>
       ) : (
-        <div style={{ display: "grid", gap: 12 }}>
+        <div className="grid gap-5">
           {faktureSorted.map((f) => {
             const isOpen = Boolean(expanded[f.idFaktura]);
 
             return (
-              <div key={f.idFaktura} style={{ border: "1px solid #ddd", borderRadius: 10, padding: 12 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                  }}
-                >
-                  <div style={{ display: "grid", gap: 4 }}>
-                    <div>
-                      <b>Faktura #{f.idFaktura}</b> • saradnja #{f.idSaradnja}
+              <section
+                key={f.idFaktura}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="grid gap-2">
+                    <div className="text-lg font-semibold text-slate-900">
+                      Faktura #{f.idFaktura}
+                      <span className="ml-2 text-xs font-normal text-slate-500">
+                        • saradnja #{f.idSaradnja}
+                      </span>
                     </div>
-                    <div style={{ fontSize: 13, opacity: 0.85 }}>
-                      Partner: <b>{f.partner.ime}</b> (#{f.partner.id}) • Datum: <b>{formatDate(f.datumIzdavanja)}</b>
+                    <div className="text-sm text-slate-600">
+                      Partner: <b>{f.partner.ime}</b> (#{f.partner.id}) • Datum:{" "}
+                      <b>{formatDate(f.datumIzdavanja)}</b>
                     </div>
                   </div>
 
-                  <div style={{ minWidth: 320, border: "1px solid #eee", borderRadius: 10, padding: 10 }}>
-                    <div style={{ display: "grid", gap: 6, fontSize: 13 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <div className="min-w-[320px] rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="grid gap-3 text-sm text-slate-700">
+                      <div className="flex justify-between gap-3">
                         <span>Roba</span>
                         <b>{Number(f.roba).toFixed(2)} €</b>
                       </div>
 
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <div className="flex justify-between gap-3">
                         <span>Kontejneri ({f.brojKontejnera}×)</span>
                         <b>{Number(f.kontejneriFee).toFixed(2)} €</b>
                       </div>
 
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <div className="flex justify-between gap-3">
                         <span>Carina</span>
                         <b>{Number(f.carina).toFixed(2)} €</b>
                       </div>
 
-                      <div
-                        style={{
-                          borderTop: "1px solid #eee",
-                          paddingTop: 6,
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <span>Ukupno</span>
+                      <div className="flex justify-between gap-3 border-t border-slate-200 pt-3">
+                        <span className="font-medium">Ukupno</span>
                         <b>{Number(f.ukupno).toFixed(2)} €</b>
                       </div>
 
-                      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button onClick={() => toggle(f.idFaktura)}>{isOpen ? "Sakrij" : "Detalji"}</Button>
+                      <div className="flex justify-end">
+                        <Button onClick={() => toggle(f.idFaktura)}>
+                          {isOpen ? "Sakrij" : "Detalji"}
+                        </Button>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {isOpen && (
-                  <div style={{ marginTop: 12, display: "grid", gap: 10 }}>
+                  <div className="mt-4 grid gap-3">
                     {f.kontejneri.map((k) => (
-                      <div key={k.idKontejner} style={{ border: "1px solid #eee", padding: 12, borderRadius: 8 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-                          <div>
+                      <article
+                        key={k.idKontejner}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-4">
+                          <div className="text-sm text-slate-700">
                             <b>Kontejner #{k.idKontejner}</b> — status: <b>{k.status}</b>
                           </div>
-                          <div>
-                            Roba u kontejneru: <b>{Number(k.ukupnaCenaKontejnera || 0).toFixed(2)} €</b>
+                          <div className="text-sm text-slate-700">
+                            Roba u kontejneru:{" "}
+                            <b>{Number(k.ukupnaCenaKontejnera || 0).toFixed(2)} €</b>
                           </div>
                         </div>
 
-                        <div style={{ marginTop: 10, display: "grid", gap: 8 }}>
+                        <div className="mt-4 grid gap-3">
                           {k.stavke.map((s) => (
-                            <div key={s.rb} style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                            <div
+                              key={s.rb}
+                              className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4"
+                            >
                               <img
                                 src={s.slika}
                                 alt={s.naziv}
                                 width={48}
                                 height={48}
-                                style={{ objectFit: "cover", borderRadius: 6 }}
+                                style={{ objectFit: "cover", borderRadius: 8 }}
                               />
-                              <div style={{ flex: 1 }}>
-                                <div>
-                                  <b>{s.naziv}</b>
-                                </div>
-                                <div style={{ fontSize: 12, opacity: 0.85 }}>
+                              <div className="min-w-[220px] flex-1">
+                                <div className="font-semibold text-slate-900">{s.naziv}</div>
+                                <div className="text-sm text-slate-600">
                                   Količina: <b>{s.kolicina}</b> • Cena: {Number(s.cena).toFixed(2)} €
                                 </div>
                               </div>
-                              <div>
-                                <b>{Number(s.iznosStavke).toFixed(2)} €</b>
+                              <div className="text-sm font-semibold text-slate-900">
+                                {Number(s.iznosStavke).toFixed(2)} €
                               </div>
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </article>
                     ))}
                   </div>
                 )}
-              </div>
+              </section>
             );
           })}
         </div>

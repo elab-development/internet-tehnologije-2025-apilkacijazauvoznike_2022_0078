@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Input from "@/src/components/Input";
 import Button from "@/src/components/Button";
 import ProductCard from "@/src/components/ProductCard";
-import LogoutButton from "@/src/components/LogoutButton";
 import { homeByRole } from "@/src/lib/role_routes";
 
 type ProizvodRow = {
@@ -306,179 +305,199 @@ export default function UvoznikProizvodiPage() {
     }
   }
 
-  if (loading) return <div style={{ padding: 16 }}>Učitavanje...</div>;
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+        Učitavanje proizvoda...
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: 16, display: "grid", gap: 16 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: 12,
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <h1>Proizvodi mojih dobavljača</h1>
-
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-          <Button onClick={() => router.push("/uvoznik/kontejner")}>Moja korpa</Button>
-          <Button onClick={() => router.push("/uvoznik/dobavljaci")}>Dobavljači</Button>
-          <Button
-            onClick={() => {
-              setSelectedDobavljacId("");
-              setSelectedKategorijaId("");
-              load(false);
-            }}
-          >
-            Osveži
-          </Button>
-          <LogoutButton />
+    <div className="grid gap-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Uvoznik / Ponuda proizvoda
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+              Proizvodi mojih dobavljača
+            </h1>
+            <p className="max-w-3xl text-sm text-slate-600">
+              Pregled proizvoda dostupnih kroz aktivne saradnje. Možete filtrirati
+              ponudu po dobavljaču i kategoriji, pretraživati rezultate, menjati
+              valutu prikaza i dodavati proizvode u korpu.
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          Dobavljač:
-          <select
-            value={selectedDobavljacId}
-            onChange={(e) =>
-              setSelectedDobavljacId(e.target.value === "" ? "" : Number(e.target.value))
-            }
-          >
-            <option value="">Svi</option>
-            {dobavljacOptions.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-          </select>
-        </label>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="grid gap-5">
+          <div className="flex flex-wrap items-end gap-4">
+            <label className="grid min-w-[220px] gap-2 text-sm font-medium text-slate-700">
+              <span>Dobavljač</span>
+              <select
+                value={selectedDobavljacId}
+                onChange={(e) =>
+                  setSelectedDobavljacId(e.target.value === "" ? "" : Number(e.target.value))
+                }
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+              >
+                <option value="">Svi</option>
+                {dobavljacOptions.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          Kategorija:
-          <select
-            value={selectedKategorijaId}
-            onChange={(e) =>
-              setSelectedKategorijaId(e.target.value === "" ? "" : Number(e.target.value))
-            }
-          >
-            <option value="">Sve</option>
-            {kategorijaOptions.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            <label className="grid min-w-[220px] gap-2 text-sm font-medium text-slate-700">
+              <span>Kategorija</span>
+              <select
+                value={selectedKategorijaId}
+                onChange={(e) =>
+                  setSelectedKategorijaId(e.target.value === "" ? "" : Number(e.target.value))
+                }
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+              >
+                <option value="">Sve</option>
+                {kategorijaOptions.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <Button onClick={() => load(true)}>Primeni filtere</Button>
-        <Button onClick={() => router.push("/uvoznik/uporedi")}>Otvori upoređivanje</Button>
-      </div>
+            <div className="flex items-end gap-2">
+              <Button onClick={() => load(true)}>Primeni filtere</Button>
+            </div>
 
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          Valuta:
-          <select value={valuta} onChange={(e) => setValuta(e.target.value as Valuta)}>
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-          </select>
-        </label>
-      </div>
+            <div className="ml-auto">
+              <Button onClick={() => router.push("/uvoznik/uporedi")}>
+                Otvori upoređivanje
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">Pretraga</span>
+              <Input
+                value={q}
+                onChange={(e: any) => setQ(e.target.value)}
+                placeholder="Pretraga (naziv, šifra, dobavljač, kategorija)"
+              />
+            </div>
+
+            <label className="grid min-w-[180px] gap-2 text-sm font-medium text-slate-700">
+              <span>Valuta</span>
+              <select
+                value={valuta}
+                onChange={(e) => setValuta(e.target.value as Valuta)}
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-slate-400"
+              >
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </section>
 
       {valuta !== "EUR" && kursErr === null && (
-        <div>
-          Trenutni kurs: <b>1 EUR = {formatBroj(kurs)} {valuta}</b>
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900 shadow-sm">
+          Trenutni kurs: <span className="font-semibold">1 EUR = {formatBroj(kurs)} {valuta}</span>
           {loadingKurs ? " (učitavanje kursa...)" : ""}
           {kursDatum ? ` (datum: ${kursDatum})` : ""}
         </div>
       )}
 
       {kursErr && (
-        <div style={{ padding: 10, border: "1px solid #ccc", borderRadius: 8 }}>
-          <b>Greška kursa:</b> {kursErr}
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 shadow-sm">
+          <span className="font-semibold">Greška kursa:</span> {kursErr}
         </div>
       )}
 
-      <Input
-        value={q}
-        onChange={(e: any) => setQ(e.target.value)}
-        placeholder="Pretraga (naziv, šifra, dobavljač, kategorija)"
-      />
-
       {err && (
-        <div style={{ padding: 12, border: "1px solid #ccc" }}>
-          <b>Greška:</b> {err}
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">
+          <span className="font-semibold">Greška:</span> {err}
         </div>
       )}
 
       {filtered.length === 0 ? (
-        <div>Nema proizvoda (ili nema aktivnih saradnji).</div>
+        <section className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-800">
+            Nema proizvoda za prikaz
+          </h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Nema rezultata za zadate filtere ili trenutno nema aktivnih saradnji.
+          </p>
+        </section>
       ) : (
-        <div style={{ display: "grid", gap: 12 }}>
+        <section className="grid gap-4">
           {filtered.map((p) => {
             const konvertovanaCena = p.cena * kurs;
 
             return (
-              <div
+              <article
                 key={p.id}
-                style={{
-                  display: "grid",
-                  gap: 8,
-                  border: "1px solid #eee",
-                  padding: 12,
-                  borderRadius: 10,
-                }}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md"
               >
-                <ProductCard p={p as any} />
+                <div className="grid gap-4">
+                  <ProductCard p={p as any} />
 
-                <div style={{ opacity: 0.85 }}>
-                  Dobavljač: <b>{p.dobavljacIme ?? "-"}</b> • Kategorija: <b>{p.kategorijaIme ?? "-"}</b>
-                </div>
-
-                {valuta !== "EUR" && (
-                  <div>
-                    Preračunata cena: <b>≈ {formatBroj(konvertovanaCena)} {valuta}</b>
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                      Dobavljač: <span className="font-semibold">{p.dobavljacIme ?? "-"}</span>
+                    </span>
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
+                      Kategorija: <span className="font-semibold">{p.kategorijaIme ?? "-"}</span>
+                    </span>
                   </div>
-                )}
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                  }}
-                >
-                  <Button onClick={() => router.push(`/uvoznik/uporedi?left=${p.id}`)}>
-                    Uporedi
-                  </Button>
+                  {valuta !== "EUR" && (
+                    <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                      Preračunata cena:{" "}
+                      <span className="font-semibold">
+                        ≈ {formatBroj(konvertovanaCena)} {valuta}
+                      </span>
+                    </div>
+                  )}
 
-                  <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <Button onClick={() => decQty(p.id)} disabled={addingId === p.id}>
-                        -
-                      </Button>
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4">
+                    <Button onClick={() => router.push(`/uvoznik/uporedi?left=${p.id}`)}>
+                      Uporedi
+                    </Button>
 
-                      <div style={{ minWidth: 30, textAlign: "center" }}>
-                        <b>{qtyById[p.id] ?? 1}</b>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2 py-2">
+                        <Button onClick={() => decQty(p.id)} disabled={addingId === p.id}>
+                          -
+                        </Button>
+
+                        <div className="min-w-[36px] text-center text-sm font-semibold text-slate-900">
+                          {qtyById[p.id] ?? 1}
+                        </div>
+
+                        <Button onClick={() => incQty(p.id)} disabled={addingId === p.id}>
+                          +
+                        </Button>
                       </div>
 
-                      <Button onClick={() => incQty(p.id)} disabled={addingId === p.id}>
-                        +
+                      <Button onClick={() => addToCart(p.id)} disabled={addingId === p.id}>
+                        {addingId === p.id ? "Dodavanje..." : "Dodaj u korpu"}
                       </Button>
                     </div>
-
-                    <Button onClick={() => addToCart(p.id)} disabled={addingId === p.id}>
-                      {addingId === p.id ? "Dodavanje..." : "Dodaj u korpu"}
-                    </Button>
                   </div>
                 </div>
-              </div>
+              </article>
             );
           })}
-        </div>
+        </section>
       )}
     </div>
   );

@@ -18,7 +18,6 @@ export default function SupplierProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState("");
 
-  // ✅ NOVO: kategorije + izabrana kategorija
   const [kategorije, setKategorije] = useState<Kategorija[]>([]);
   const [kategorijaId, setKategorijaId] = useState<number | "">("");
 
@@ -42,7 +41,6 @@ export default function SupplierProductsPage() {
     router.push(`/dobavljac/proizvod/${id}/izmena`);
   }
 
-  // ✅ NOVO: funkcija koja učitava proizvode uz filter kategorije
   async function loadProducts(selectedKid: number | "" = kategorijaId) {
     setError("");
 
@@ -88,14 +86,12 @@ export default function SupplierProductsPage() {
           return;
         }
 
-        // ✅ NOVO: učitaj kategorije za dropdown
         const kRes = await fetch("/api/kategorije", { credentials: "include", cache: "no-store" });
         if (kRes.ok) {
           const kJson = await kRes.json();
           setKategorije(Array.isArray(kJson?.data) ? kJson.data : []);
         }
 
-        // ✅ NOVO: učitaj proizvode (bez filtera na startu)
         await loadProducts("");
 
         setLoading(false);
@@ -106,7 +102,6 @@ export default function SupplierProductsPage() {
     }
 
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) return <div className="p-6">Učitavanje...</div>;
@@ -121,7 +116,6 @@ export default function SupplierProductsPage() {
         </div>
       </div>
 
-      {/* ✅ NOVO: filter po kategoriji */}
       <div className="flex gap-2 items-center flex-wrap">
         <label className="flex gap-2 items-center">
           <span className="text-sm">Kategorija:</span>
@@ -140,16 +134,6 @@ export default function SupplierProductsPage() {
         </label>
 
         <Button onClick={() => loadProducts(kategorijaId)}>Primeni filter</Button>
-
-        <Button
-          variant="secondary"
-          onClick={() => {
-            setKategorijaId("");
-            loadProducts("");
-          }}
-        >
-          Reset
-        </Button>
       </div>
 
       <div className="space-y-3">
