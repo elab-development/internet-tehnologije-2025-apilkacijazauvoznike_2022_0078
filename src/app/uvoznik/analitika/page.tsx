@@ -147,30 +147,51 @@ export default function UvoznikAnalitikaPage() {
     if (loading) return <div style={{ padding: 16 }}>Učitavanje analitike...</div>;
 
     return (
-        <div style={{ display: "grid", gap: 24 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                <h1>Analitika uvoznika</h1>
+        <div className="grid gap-6">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="space-y-2">
+                        <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                            Uvoznik / Analitika
+                        </div>
+                        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+                            Analitika uvoznika
+                        </h1>
+                        <p className="max-w-3xl text-sm text-slate-600">
+                            Vizuelni pregled potrošnje po mesecima, po dobavljačima i po
+                            najčešće kupljenim proizvodima.
+                        </p>
+                    </div>
 
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <Button onClick={() => router.push("/uvoznik/proizvodi")}>Proizvodi</Button>
-                    <Button onClick={() => router.push("/uvoznik/kontejner")}>Moja korpa</Button>
-                    <Button onClick={() => load()}>Osveži analitiku</Button>
+                    <div className="flex flex-wrap gap-2">
+                        <Button onClick={() => router.push("/uvoznik/proizvodi")}>Proizvodi</Button>
+                        <Button onClick={() => load()}>Osveži analitiku</Button>
+                    </div>
                 </div>
-            </div>
+            </section>
 
             {err && (
-                <div style={{ padding: 12, border: "1px solid #ccc", borderRadius: 8 }}>
-                    <b>Greška:</b> {err}
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">
+                    <span className="font-semibold">Greška:</span> {err}
                 </div>
             )}
 
             {!err && (
                 <>
-                    <div style={{ border: "1px solid #eee", borderRadius: 10, padding: 16 }}>
-                        <h2 style={{ marginBottom: 12 }}>Kupovina po mesecima</h2>
+                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <div className="mb-4">
+                            <h2 className="text-lg font-semibold text-slate-900">
+                                Kupovina po mesecima
+                            </h2>
+                            <p className="mt-1 text-sm text-slate-500">
+                                Pregled ukupne potrošnje po vremenskim periodima.
+                            </p>
+                        </div>
 
                         {meseci.length === 0 ? (
-                            <div>Nema podataka za prikaz.</div>
+                            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
+                                Nema podataka za prikaz.
+                            </div>
                         ) : (
                             <Chart
                                 chartType="ColumnChart"
@@ -180,16 +201,26 @@ export default function UvoznikAnalitikaPage() {
                                 options={{
                                     title: "Ukupna potrošnja po mesecima",
                                     legend: { position: "none" },
+                                    backgroundColor: "transparent",
                                 }}
                             />
                         )}
-                    </div>
+                    </section>
 
-                    <div style={{ border: "1px solid #eee", borderRadius: 10, padding: 16 }}>
-                        <h2 style={{ marginBottom: 12 }}>Potrošnja po dobavljaču</h2>
+                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <div className="mb-4">
+                            <h2 className="text-lg font-semibold text-slate-900">
+                                Potrošnja po dobavljaču
+                            </h2>
+                            <p className="mt-1 text-sm text-slate-500">
+                                Udeo ukupne potrošnje raspoređen po poslovnim partnerima.
+                            </p>
+                        </div>
 
                         {dobavljaci.length === 0 ? (
-                            <div>Nema podataka za prikaz.</div>
+                            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
+                                Nema podataka za prikaz.
+                            </div>
                         ) : (
                             <Chart
                                 chartType="PieChart"
@@ -198,16 +229,26 @@ export default function UvoznikAnalitikaPage() {
                                 data={dobavljaciChartData}
                                 options={{
                                     title: "Udeo potrošnje po dobavljaču",
+                                    backgroundColor: "transparent",
                                 }}
                             />
                         )}
-                    </div>
+                    </section>
 
-                    <div style={{ border: "1px solid #eee", borderRadius: 10, padding: 16 }}>
-                        <h2 style={{ marginBottom: 12 }}>Najčešće kupljeni proizvodi</h2>
+                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <div className="mb-4">
+                            <h2 className="text-lg font-semibold text-slate-900">
+                                Najčešće kupljeni proizvodi
+                            </h2>
+                            <p className="mt-1 text-sm text-slate-500">
+                                Proizvodi koji se najčešće pojavljuju u završenim porudžbinama.
+                            </p>
+                        </div>
 
                         {proizvodi.length === 0 ? (
-                            <div>Nema podataka za prikaz.</div>
+                            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
+                                Nema podataka za prikaz.
+                            </div>
                         ) : (
                             <Chart
                                 chartType="BarChart"
@@ -217,10 +258,11 @@ export default function UvoznikAnalitikaPage() {
                                 options={{
                                     title: "Najčešće kupljeni proizvodi",
                                     legend: { position: "none" },
+                                    backgroundColor: "transparent",
                                 }}
                             />
                         )}
-                    </div>
+                    </section>
                 </>
             )}
         </div>

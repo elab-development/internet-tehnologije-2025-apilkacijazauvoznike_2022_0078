@@ -140,7 +140,7 @@ export default function DobavljacSaradnjePage() {
                 <h1 className="text-xl font-semibold">Saradnje (Dobavljač)</h1>
                 <div className="flex gap-2">
                     <Button variant="secondary" onClick={() => router.push("/dobavljac/proizvod")}>
-                        Nazad
+                        Moji proizvodi
                     </Button>
                     
                 </div>

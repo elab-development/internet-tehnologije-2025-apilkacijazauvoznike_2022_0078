@@ -3,6 +3,8 @@ import type { NextRequest } from "next/server";
 
 const AUTH_COOKIE = "auth";
 
+const ALLOWED_ORIGINS = ["http://localhost:3000"];
+
 function homeByRole(role?: string) {
   if (role === "UVOZNIK") return "/uvoznik/dobavljaci";
   if (role === "DOBAVLJAC") return "/dobavljac/proizvod";
@@ -15,7 +17,7 @@ function decodeJwtPayload(token: string): any | null {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
 
-    const payload = parts[1]; // base64url
+    const payload = parts[1];
     const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
     const padded = base64 + "===".slice((base64.length + 3) % 4);
 
@@ -26,11 +28,35 @@ function decodeJwtPayload(token: string): any | null {
   }
 }
 
+function applyCors(req: NextRequest, res: NextResponse) {
+  const origin = req.headers.get("origin");
+
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.headers.set("Access-Control-Allow-Origin", origin);
+    res.headers.set("Vary", "Origin");
+    res.headers.set("Access-Control-Allow-Credentials", "true");
+    res.headers.set("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+    res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  }
+
+  return res;
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // CORS za API rute
+  if (pathname.startsWith("/api")) {
+    if (req.method === "OPTIONS") {
+      const res = new NextResponse(null, { status: 204 });
+      return applyCors(req, res);
+    }
+
+    const res = NextResponse.next();
+    return applyCors(req, res);
+  }
+
   if (
-    pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname.startsWith("/assets")
@@ -78,5 +104,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/uvoznik/:path*", "/dobavljac/:path*"],
+  matcher: ["/api/:path*", "/uvoznik/:path*", "/dobavljac/:path*"],
 };

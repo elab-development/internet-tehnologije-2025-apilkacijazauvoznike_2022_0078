@@ -2,9 +2,23 @@ import { db } from "@/src/db";
 import { korisnik } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { sanitizeText } from "@/src/lib/sanitize";
 
 export type Role = "ADMIN" | "UVOZNIK" | "DOBAVLJAC";
+
+export function sanitizeText(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+export function sanitizeOptionalText(value?: string | null): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  return sanitizeText(value);
+}
 
 type Result<T> =
   | { ok: true; data: T }
@@ -94,12 +108,12 @@ export async function registerUser(input: {
     status: boolean;
   }>
 > {
-  const imePrezimeRaw = input.imePrezime?.trim();
+  const imePrezime = input.imePrezime?.trim();
   const email = input.email?.trim().toLowerCase();
   const sifra = input.sifra;
   const uloga = input.uloga;
 
-  if (!imePrezimeRaw || !email || !sifra || !uloga) {
+  if (!imePrezime || !email || !sifra || !uloga) {
     return {
       ok: false,
       error: {
@@ -134,7 +148,6 @@ export async function registerUser(input: {
     };
   }
 
-  const imePrezime = sanitizeText(imePrezimeRaw);
   const sifraHash = await bcrypt.hash(sifra, 10);
 
   const inserted = await db
