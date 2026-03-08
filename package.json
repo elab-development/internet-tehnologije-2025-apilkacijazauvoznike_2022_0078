@@ -18,6 +18,7 @@
     "postgres": "^3.4.8",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-google-charts": "^5.2.1",
     "swagger-ui-react": "^5.32.0",
     "zod": "^4.3.6"
   },
