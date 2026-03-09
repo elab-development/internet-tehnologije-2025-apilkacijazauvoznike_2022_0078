@@ -12,7 +12,7 @@ export default function DobavljacLayout({ children }: { children: React.ReactNod
               href="/"
               className="shrink-0 text-xl font-semibold tracking-tight text-slate-800"
             >
-              Dobavljač panel
+              BizSupply
             </Link>
 
             <nav className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-600">

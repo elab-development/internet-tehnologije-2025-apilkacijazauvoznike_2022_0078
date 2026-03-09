@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Import Management System",
+  title: "BizSupply",
   description: "Aplikacija za upravljanje uvozom robe",
 };
 

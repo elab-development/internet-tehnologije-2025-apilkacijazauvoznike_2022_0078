@@ -11,7 +11,7 @@ export default function UvoznikLayout({ children }: { children: React.ReactNode 
               href="/"
               className="shrink-0 text-xl font-semibold tracking-tight text-slate-800"
             >
-              Uvoznik panel
+              BizSupply
             </Link>
 
             <nav className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-600">
