@@ -124,7 +124,7 @@ export default function LoginPage() {
               />
 
               <Input
-                label="Sifra"
+                label="Šifra"
                 type="password"
                 value={sifra}
                 onChange={(e) => setSifra(e.target.value)}

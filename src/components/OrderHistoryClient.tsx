@@ -192,7 +192,7 @@ export default function OrderHistoryClient() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Uvoznik / Istorija
+              Evidencija | Promet
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
               Istorija porudžbina
@@ -215,7 +215,7 @@ export default function OrderHistoryClient() {
                 <option value="">Svi</option>
                 {partners.map((p) => (
                   <option key={p.id} value={String(p.id)}>
-                    {p.ime} (#{p.id})
+                    {p.ime}
                   </option>
                 ))}
               </select>
@@ -253,13 +253,13 @@ export default function OrderHistoryClient() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="grid gap-2">
                     <div className="text-lg font-semibold text-slate-900">
-                      Faktura #{f.idFaktura}
-                      <span className="ml-2 text-xs font-normal text-slate-500">
-                        • saradnja #{f.idSaradnja}
+                      Faktura #{f.idFaktura} •
+                      <span className="ml-2 text-xs font-normal text-green-500">
+                         PLAĆENO
                       </span>
                     </div>
                     <div className="text-sm text-slate-600">
-                      Partner: <b>{f.partner.ime}</b> (#{f.partner.id}) • Datum:{" "}
+                      Partner: <b>{f.partner.ime}</b> • Datum:{" "}
                       <b>{formatDate(f.datumIzdavanja)}</b>
                     </div>
                   </div>
@@ -272,7 +272,7 @@ export default function OrderHistoryClient() {
                       </div>
 
                       <div className="flex justify-between gap-3">
-                        <span>Kontejneri ({f.brojKontejnera}×)</span>
+                        <span>Kontejneri ({f.brojKontejnera}× 3200 €)</span>
                         <b>{Number(f.kontejneriFee).toFixed(2)} €</b>
                       </div>
 
@@ -304,7 +304,7 @@ export default function OrderHistoryClient() {
                       >
                         <div className="flex flex-wrap items-center justify-between gap-4">
                           <div className="text-sm text-slate-700">
-                            <b>Kontejner #{k.idKontejner}</b> — status: <b>{k.status}</b>
+                            <b>Kontejner #{k.idKontejner}</b> - status: <b>{k.status}</b>
                           </div>
                           <div className="text-sm text-slate-700">
                             Roba u kontejneru:{" "}

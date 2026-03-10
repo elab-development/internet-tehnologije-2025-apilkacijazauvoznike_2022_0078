@@ -142,7 +142,6 @@ function UvoznikUporediContent() {
 
   useEffect(() => {
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadLeftList() {
@@ -227,7 +226,7 @@ function UvoznikUporediContent() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Uvoznik / Upoređivanje
+              Uvoznik | Upoređivanje
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
               Uporedi proizvode
@@ -275,7 +274,7 @@ function UvoznikUporediContent() {
                   <option value="">Izaberi...</option>
                   {dobavljaci.map((d) => (
                     <option key={d.idDobavljac} value={d.idDobavljac}>
-                      {d.imePrezime} (#{d.idDobavljac})
+                      {d.imePrezime}
                     </option>
                   ))}
                 </select>
@@ -323,7 +322,7 @@ function UvoznikUporediContent() {
                       <option value="">Izaberi...</option>
                       {lProizvodi.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.naziv} (#{p.id}) — {p.cena}€
+                          {p.naziv} - {p.cena}€
                         </option>
                       ))}
                     </select>
@@ -348,7 +347,7 @@ function UvoznikUporediContent() {
               <img
                 src={left.slika}
                 alt={left.naziv}
-                className="h-56 w-full rounded-2xl border border-slate-200 object-cover"
+                className="aspect-[4/3] w-full rounded-2xl border border-slate-200 object-contain bg-white"
               />
 
               <div className="space-y-2">
@@ -412,7 +411,7 @@ function UvoznikUporediContent() {
                   <option value="">Izaberi...</option>
                   {dobavljaci.map((d) => (
                     <option key={d.idDobavljac} value={d.idDobavljac}>
-                      {d.imePrezime} (#{d.idDobavljac})
+                      {d.imePrezime}
                     </option>
                   ))}
                 </select>
@@ -460,7 +459,7 @@ function UvoznikUporediContent() {
                       <option value="">Izaberi...</option>
                       {rProizvodi.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.naziv} (#{p.id}) — {p.cena}€
+                          {p.naziv} - {p.cena}€
                         </option>
                       ))}
                     </select>
@@ -485,7 +484,7 @@ function UvoznikUporediContent() {
               <img
                 src={right.slika}
                 alt={right.naziv}
-                className="h-56 w-full rounded-2xl border border-slate-200 object-cover"
+                className="aspect-[4/3] w-full rounded-2xl border border-slate-200 object-contain bg-white"
               />
 
               <div className="space-y-2">
@@ -528,7 +527,7 @@ function UvoznikUporediContent() {
         }`}
       >
         {canCompare
-          ? "✅ Izabrana su oba proizvoda – možete ih porediti."
+          ? "✅ Izabrana su oba proizvoda - možete ih porediti."
           : "Izaberite oba proizvoda da biste uporedili."}
       </section>
     </div>

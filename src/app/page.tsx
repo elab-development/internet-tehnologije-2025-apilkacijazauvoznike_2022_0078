@@ -30,7 +30,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <HeroSection
-        badge="Pametna B2B nabavka za efikasnije poslovanje"
+        badge="Pametna nabavka za efikasnije poslovanje"
         title="Digitalni most između uvoznika i dobavljača."
         subtitle="BizSupply povezuje poslovne partnere, pojednostavljuje pregled ponude, upravljanje saradnjama, organizaciju kontejnera i analizu troškova uvoza kroz jednu modernu platformu."
         minHeightClassName="min-h-[520px]"

@@ -4,7 +4,7 @@ import LogoutButton from "@/src/components/LogoutButton";
 export default function UvoznikLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white shadow-sm">
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4">
           <div className="flex min-w-0 flex-1 items-center gap-8">
             <Link

@@ -152,8 +152,8 @@ export async function addToKontejner(body: any) {
     const maxZ = k.maxZapremina * 0.9;
 
     
-    // Ako je aktivni kontejner REOPEN, ne dozvoljavamo kreiranje novog
-    // Ako je OPEN tražimo potvrdu zatvorimo i kreiramo novi 
+    // ako je aktivni kontejner REOPEN, ne dozvoljavamo kreiranje novog
+    // ako je OPEN trazimo potvrdu zatvorimo i kreiramo novi 
     if (trenutna + zapreminaStavkeAdd > maxZ) {
       if (k.status === "REOPEN") {
         return {
@@ -162,7 +162,7 @@ export async function addToKontejner(body: any) {
             ok: false,
             error: "REOPEN_CONTAINER_FULL",
             message:
-              "Reopen kontejner je pun. Ne možete kreirati novi kontejner dok ste u REOPEN režimu. Zatvorite ili obrišite REOPEN kontejner da biste nastavili.",
+              "REOPEN kontejner je pun!\n Ne možete kreirati novi kontejner dok ste u REOPEN režimu. Zatvorite ili obrišite REOPEN kontejner da biste nastavili.",
             data: {
               currentContainerId: k.idKontejner,
               maxZapreminaCm3: maxZ,
@@ -180,7 +180,7 @@ export async function addToKontejner(body: any) {
             ok: false,
             error: "CONTAINER_OVERFLOW",
             message:
-              "Nema mesta u trenutnom kontejneru. Ako nastavite, ovaj proizvod će biti dodat u NOVI kontejner. Da li želite da nastavite?",
+              "Nema mesta u trenutnom kontejneru!\n Ako nastavite, ovaj proizvod će biti dodat u NOVI kontejner. Da li želite da nastavite?",
             data: {
               currentContainerId: k.idKontejner,
               maxZapreminaCm3: maxZ,
@@ -367,7 +367,7 @@ export async function updateStavkaDelta(body: any, uvoznikId: number) {
               ok: false,
               error: "REOPEN_CONTAINER_FULL",
               message:
-                "Reopen kontejner je pun. Ne možete kreirati novi kontejner dok ste u REOPEN režimu. Zatvorite ili obrišite REOPEN kontejner da biste nastavili.",
+                "Reopen kontejner je pun!\n Ne možete kreirati novi kontejner dok ste u REOPEN režimu. Zatvorite ili obrišite REOPEN kontejner da biste nastavili.",
               data: {
                 currentContainerId: st.idKontejner,
                 maxZapreminaCm3: maxZ,
@@ -385,7 +385,7 @@ export async function updateStavkaDelta(body: any, uvoznikId: number) {
               ok: false,
               error: "CONTAINER_OVERFLOW",
               message:
-                "Nema mesta u trenutnom kontejneru. Ako nastavite, dodatna količina će otići u NOVI kontejner. Nastaviti?",
+                "Nema mesta u trenutnom kontejneru!\n Ako nastavite, dodatna količina će otići u NOVI kontejner. Nastaviti?",
               data: {
                 currentContainerId: st.idKontejner,
                 maxZapreminaCm3: maxZ,

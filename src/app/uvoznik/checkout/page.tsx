@@ -174,7 +174,7 @@ export default function CheckoutPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Uvoznik / Checkout
+              Uvoznik | Checkout
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
               Pregled porudžbine
@@ -216,9 +216,6 @@ export default function CheckoutPage() {
                   <div className="space-y-2">
                     <div className="text-lg font-semibold text-slate-900">
                       Dobavljač: {g.dobavljacIme}
-                      <span className="ml-2 text-xs font-normal text-slate-500">
-                        (saradnja #{g.idSaradnja})
-                      </span>
                     </div>
                     <div className="text-sm text-slate-600">
                       Kontejnera: <span className="font-semibold">{g.brojKontejnera}</span> •
@@ -272,7 +269,7 @@ export default function CheckoutPage() {
                       >
                         <div className="flex flex-wrap items-center justify-between gap-4">
                           <div className="text-sm text-slate-700">
-                            <b>Kontejner #{k.idKontejner}</b> — status: <b>{k.status}</b>
+                            <b>Kontejner #{k.idKontejner}</b>
                           </div>
                           <div className="text-sm text-slate-700">
                             Roba u kontejneru:{" "}
@@ -315,7 +312,7 @@ export default function CheckoutPage() {
 
           <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="text-lg font-semibold text-slate-900">
-              Grand total (sve grupe): {grandTotal.toFixed(2)} €
+              Grand total: {grandTotal.toFixed(2)} €
             </div>
             <div className="text-sm text-slate-500">
               Plaćanje se radi po dobavljaču (svaka faktura posebno).

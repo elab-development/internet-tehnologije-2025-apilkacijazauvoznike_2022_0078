@@ -28,7 +28,7 @@ function validateCreateInput(body: any): { ok: true; data: CreateProizvodInput }
     idDobavljac,
   } = body ?? {};
 
-  if (typeof sifra !== "string" || sifra.trim() === "") return { ok: false, error: "Polje 'sifra' je obavezno" };
+  if (typeof sifra !== "string" || sifra.trim() === "") return { ok: false, error: "Polje 'šifra' je obavezno" };
   if (typeof naziv !== "string" || naziv.trim() === "") return { ok: false, error: "Polje 'naziv' je obavezno" };
   if (typeof slika !== "string" || slika.trim() === "") return { ok: false, error: "Polje 'slika' je obavezno" };
 
@@ -39,9 +39,9 @@ function validateCreateInput(body: any): { ok: true; data: CreateProizvodInput }
   const nIdKategorija = Number(idKategorija);
   const nIdDobavljac = Number(idDobavljac);
 
-  if (!Number.isFinite(nSirina)) return { ok: false, error: "Polje 'sirina' mora biti broj" };
+  if (!Number.isFinite(nSirina)) return { ok: false, error: "Polje 'širina' mora biti broj" };
   if (!Number.isFinite(nVisina)) return { ok: false, error: "Polje 'visina' mora biti broj" };
-  if (!Number.isFinite(nDuzina)) return { ok: false, error: "Polje 'duzina' mora biti broj" };
+  if (!Number.isFinite(nDuzina)) return { ok: false, error: "Polje 'dužina' mora biti broj" };
   if (!Number.isFinite(nCena)) return { ok: false, error: "Polje 'cena' mora biti broj" };
   if (!Number.isInteger(nIdKategorija) || nIdKategorija <= 0) return { ok: false, error: "Polje 'idKategorija' mora biti pozitivan ceo broj" };
   if (!Number.isInteger(nIdDobavljac) || nIdDobavljac <= 0) return { ok: false, error: "Polje 'idDobavljac' mora biti pozitivan ceo broj" };
@@ -171,21 +171,21 @@ export async function updateProizvod(userId: number, productId: string, body: an
 
   if (body?.sifra !== undefined) {
     if (typeof body.sifra !== "string" || body.sifra.trim() === "") {
-      return { status: 400, json: { ok: false, error: "sifra mora biti string" } };
+      return { status: 400, json: { ok: false, error: "Šifra mora biti string" } };
     }
     zaIzmenu.sifra = sanitizeText(body.sifra.trim());
   }
 
   if (body?.naziv !== undefined) {
     if (typeof body.naziv !== "string" || body.naziv.trim() === "") {
-      return { status: 400, json: { ok: false, error: "naziv mora biti string" } };
+      return { status: 400, json: { ok: false, error: "Naziv mora biti string" } };
     }
     zaIzmenu.naziv = sanitizeText(body.naziv.trim());
   }
 
   if (body?.slika !== undefined) {
     if (typeof body.slika !== "string" || body.slika.trim() === "") {
-      return { status: 400, json: { ok: false, error: "slika mora biti string" } };
+      return { status: 400, json: { ok: false, error: "Slika mora biti string" } };
     }
     zaIzmenu.slika = body.slika.trim();
   }

@@ -80,7 +80,7 @@ export async function getIstorijaPorudzbina(userId: number, role: Role, filters:
       return { status: 200, json: { ok: true, fakture: [] } };
     }
 
-    // Ucitamo sve stavke fakture i dobijamo koji kontejneri pripadaju kojoj fakturi
+    // ucitamo sve stavke fakture i dobijamo koji kontejneri pripadaju kojoj fakturi
     const fakturaIds = faktureRows.map((f) => f.idFaktura);
 
     const sfRows = await db
@@ -96,7 +96,7 @@ export async function getIstorijaPorudzbina(userId: number, role: Role, filters:
       .innerJoin(kontejner, eq(stavkaFakture.idKontejner, kontejner.idKontejner))
       .where(inArray(stavkaFakture.idFaktura, fakturaIds));
 
-    // Sakupimo sve kontejner ID 
+    // sakupimo sve kontejner ID 
     const kontejnerIds = Array.from(
       new Set(sfRows.map((r) => Number(r.idKontejner)).filter((x) => Number.isInteger(x) && x > 0))
     );
@@ -121,7 +121,7 @@ export async function getIstorijaPorudzbina(userId: number, role: Role, filters:
           .innerJoin(proizvod, eq(stavkaKontejnera.idProizvod, proizvod.id))
           .where(inArray(stavkaKontejnera.idKontejner, kontejnerIds));
 
-    // Slozimo stavke po kontejneru
+    // slozimo stavke po kontejneru
     const itemsByKontejner: Record<number, any[]> = {};
     for (const it of skRows) {
       const kid = Number(it.idKontejner);
@@ -129,7 +129,7 @@ export async function getIstorijaPorudzbina(userId: number, role: Role, filters:
       itemsByKontejner[kid].push(it);
     }
 
-    // Slozimo kontejner po fakturi 
+    // slozimo kontejner po fakturi 
     const kontejneriByFaktura: Record<number, any[]> = {};
     for (const r of sfRows) {
       const fid = Number(r.idFaktura);
