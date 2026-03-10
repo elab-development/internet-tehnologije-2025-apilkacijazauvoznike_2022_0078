@@ -29,7 +29,7 @@ export default function SupplierProductsPage() {
     const text = await res.text();
 
     if (!res.ok) {
-      alert(`Brisanje nije uspelo. Status=${res.status}\nOdgovor: ${text || "(prazno)"}`);
+      alert(`Brisanje nije uspelo!\n ${text || "(prazno)"}`);
       return;
     }
 
@@ -125,7 +125,7 @@ export default function SupplierProductsPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Dobavljač / Proizvodi
+              Dobavljač | Proizvodi
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
               Moji proizvodi

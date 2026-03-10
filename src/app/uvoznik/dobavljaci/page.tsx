@@ -101,7 +101,7 @@ export default function UvoznikDobavljaciPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-              Uvoznik / Partneri
+              Uvoznik | Partneri
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
               Moji dobavljači
@@ -174,11 +174,6 @@ export default function UvoznikDobavljaciPage() {
                 </div>
 
                 <div className="grid gap-2 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500">ID dobavljača</span>
-                    <span className="font-medium text-slate-900">#{d.idDobavljac}</span>
-                  </div>
-
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-slate-500">Saradnja od</span>
                     <span className="font-medium text-slate-900">

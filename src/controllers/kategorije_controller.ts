@@ -32,7 +32,7 @@ export async function deleteCategoryById(id: number) {
   const deleted = await db.delete(kategorija).where(eq(kategorija.id, id)).returning();
 
   if (deleted.length === 0) {
-    return { error: { code: "NOT_FOUND", message: "Kategorija nije pronadjena!" } };
+    return { error: { code: "NOT_FOUND", message: "Kategorija nije pronađena!" } };
   }
 
   return { data: deleted[0] };

@@ -180,7 +180,7 @@ export default function UvoznikSaradnjePage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-2">
           <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-            Uvoznik / Saradnje
+            Uvoznik | Saradnje
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
             Saradnje

@@ -31,12 +31,12 @@ export default function RegisterPage() {
     }
 
     if (sifra.length < 6) {
-      setError("Sifra mora imati bar 6 karaktera.");
+      setError("Šifra mora imati bar 6 karaktera.");
       return;
     }
 
     if (sifra !== potvrdaSifre) {
-      setError("Sifra i potvrda sifre se ne poklapaju.");
+      setError("Šifra i potvrda šifre se ne poklapaju.");
       return;
     }
 
@@ -143,7 +143,7 @@ export default function RegisterPage() {
               />
 
               <Input
-                label="Sifra"
+                label="Šifra"
                 type="password"
                 value={sifra}
                 onChange={(e) => setSifra(e.target.value)}
@@ -151,7 +151,7 @@ export default function RegisterPage() {
               />
 
               <Input
-                label="Potvrda sifre"
+                label="Potvrda šifre"
                 type="password"
                 value={potvrdaSifre}
                 onChange={(e) => setPotvrdaSifre(e.target.value)}
@@ -166,7 +166,7 @@ export default function RegisterPage() {
                   onChange={(e) => setUloga(e.target.value as PublicRole)}
                 >
                   <option value="UVOZNIK">Uvoznik</option>
-                  <option value="DOBAVLJAC">Dobavljac</option>
+                  <option value="DOBAVLJAC">Dobavljač</option>
                 </select>
               </label>
 

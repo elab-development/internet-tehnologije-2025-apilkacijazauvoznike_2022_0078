@@ -11,8 +11,8 @@ type Result<T> =
   | { ok: false; error: { code: string; message: string } };
 
 export async function getUserByEmail(email: string) {
-  const normalized = email.trim().toLowerCase();
-  const [u] = await db.select().from(korisnik).where(eq(korisnik.email, normalized));
+  const checkEmail = email.trim().toLowerCase();
+  const [u] = await db.select().from(korisnik).where(eq(korisnik.email, checkEmail));
   return u ?? null;
 }
 
@@ -40,7 +40,7 @@ export async function loginUser(input: {
   if (!email || !sifra) {
     return {
       ok: false,
-      error: { code: "INVALID_INPUT", message: "Email i sifra su obavezni" },
+      error: { code: "INVALID_INPUT", message: "Email i šifra su obavezni" },
     };
   }
 
@@ -48,7 +48,7 @@ export async function loginUser(input: {
   if (!u) {
     return {
       ok: false,
-      error: { code: "INVALID_CREDENTIALS", message: "Pogresan email ili sifra" },
+      error: { code: "INVALID_CREDENTIALS", message: "Pogrešan email ili šifra" },
     };
   }
 
@@ -63,7 +63,7 @@ export async function loginUser(input: {
   if (!passOk) {
     return {
       ok: false,
-      error: { code: "INVALID_CREDENTIALS", message: "Pogresan email ili sifra" },
+      error: { code: "INVALID_CREDENTIALS", message: "Pogrešan email ili šifra" },
     };
   }
 
@@ -104,7 +104,7 @@ export async function registerUser(input: {
       ok: false,
       error: {
         code: "INVALID_INPUT",
-        message: "Ime i prezime, email, sifra i uloga su obavezni",
+        message: "Ime i prezime, email, šifra i uloga su obavezni",
       },
     };
   }
@@ -114,7 +114,7 @@ export async function registerUser(input: {
       ok: false,
       error: {
         code: "INVALID_ROLE",
-        message: "Dozvoljena je registracija samo za uvoznika i dobavljaca",
+        message: "Dozvoljena je registracija samo za uvoznika i dobavljača",
       },
     };
   }
@@ -122,7 +122,7 @@ export async function registerUser(input: {
   if (sifra.length < 6) {
     return {
       ok: false,
-      error: { code: "INVALID_INPUT", message: "Sifra mora imati bar 6 karaktera" },
+      error: { code: "INVALID_INPUT", message: "Šifra mora imati bar 6 karaktera" },
     };
   }
 
@@ -130,7 +130,7 @@ export async function registerUser(input: {
   if (exists) {
     return {
       ok: false,
-      error: { code: "EMAIL_EXISTS", message: "Email je vec registrovan" },
+      error: { code: "EMAIL_EXISTS", message: "Email je već registrovan" },
     };
   }
 
