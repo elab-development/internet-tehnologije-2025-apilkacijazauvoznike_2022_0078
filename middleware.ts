@@ -3,7 +3,10 @@ import type { NextRequest } from "next/server";
 
 const AUTH_COOKIE = "auth";
 
-const ALLOWED_ORIGINS = ["http://localhost:3000"];
+const ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  "https://internet-tehnologije-2025-apilkacijazauvoznike2-production.up.railway.app",
+];
 
 function homeByRole(role?: string) {
   if (role === "UVOZNIK") return "/uvoznik/dobavljaci";

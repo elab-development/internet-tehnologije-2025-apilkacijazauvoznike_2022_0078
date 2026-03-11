@@ -25,6 +25,7 @@ services:
     ports:
       - "3000:3000"
     environment:
+      #               protokol://username:password@host:port/db
       DATABASE_URL: postgresql://app:app@db:5432/iteh_uvoznici
       JWT_SECRET: iteh_uvoznici_dev_secret
 

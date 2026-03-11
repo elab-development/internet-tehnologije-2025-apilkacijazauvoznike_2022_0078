@@ -322,7 +322,7 @@ function UvoznikUporediContent() {
                       <option value="">Izaberi...</option>
                       {lProizvodi.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.naziv} - {p.cena}€
+                          {p.naziv}
                         </option>
                       ))}
                     </select>
@@ -459,7 +459,7 @@ function UvoznikUporediContent() {
                       <option value="">Izaberi...</option>
                       {rProizvodi.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.naziv} - {p.cena}€
+                          {p.naziv}
                         </option>
                       ))}
                     </select>

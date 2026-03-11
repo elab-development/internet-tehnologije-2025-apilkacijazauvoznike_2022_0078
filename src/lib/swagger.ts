@@ -11,6 +11,10 @@ const openApiSpec = {
       url: "http://localhost:3000",
       description: "Local development server",
     },
+    {
+    url: "https://internet-tehnologije-2025-apilkacijazauvoznike2-production.up.railway.app",
+    description: "Production server (Railway)",
+    }
   ],
   tags: [
     { name: "Auth", description: "Autentifikacija korisnika" },

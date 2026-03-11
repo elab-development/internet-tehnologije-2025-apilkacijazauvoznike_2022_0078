@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const user = await requireUser();
     const body = await req.json();
-
+    
     let payload = body;
 
     if (user.uloga === "UVOZNIK") {
